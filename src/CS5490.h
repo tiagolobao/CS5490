@@ -18,8 +18,7 @@
 	it or distribute. If you notice any issues
 	or suggestions, contact me
 
-	Rational Class from:
-	http://courses.washington.edu/css342/zander/css332/ratcpp.html
+
 
 ******************************************/
 
