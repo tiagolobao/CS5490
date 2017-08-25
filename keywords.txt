@@ -1,0 +1,6 @@
+CS5490	KEYWORD1
+instruct	KEYWORD2
+reset     KEYWORD2
+begin KEYWORD2
+
+MCLK_default	LITERAL1
