@@ -36,13 +36,19 @@
 #ifndef CS5490_h
 #define CS5490_h
 
+//Software Serial Library
+#ifndef  SoftwareSerial.h
+#include <SoftwareSerial.h>
+#endif
+
 
 // Used .h files
 #include <stdio.h>
 #include <string.h>
-#include <inttypes.h> 
+#include <inttypes.h>
 #include "Arduino.h" //Arduino Library
-#include <SoftwareSerial.h> //Software Serial Library
+
+
 
 #define MCLK_default 4.096
 
