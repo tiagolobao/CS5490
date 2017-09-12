@@ -18,7 +18,7 @@ Arduino Library / ESP for Communication with the Cirrus Logic CS5490 Chip
 how to calculate:
 baud rate = BR[15:0] / (524288/MCLK)
 
-default: 
+default:
 MCLK = 4.096Mhz
 baud rate = 600
 
@@ -33,13 +33,13 @@ after 128 ms
 
 Function         |     Binary Value       | specification
 
-Register Read    | 0 0 A5 A4 A3 A2 A1 A0  | A[5:0] 
- 
+Register Read    | 0 0 A5 A4 A3 A2 A1 A0  | A[5:0]
+
 Register Write   | 0 1 A5 A4 A3 A2 A1 A0  | A[5:0]
 
 Page Select      | 1 0 P5 P4 P3 P2 P1 P0  | P[5:0]
 
-Instruction      | 1 1 C5 C4 C3 C2 C1 C0  | C[5:0] 
+Instruction      | 1 1 C5 C4 C3 C2 C1 C0  | C[5:0]
 
 
 <h3> Binaries Instructions Format  </h3>
@@ -62,7 +62,12 @@ Calibration
 1 10 C[2:0] - AC Offset
 1 11 C[2:0] - Gain
 
+<h3> How to numberfy </h3>
 
+The first bit is the LSB!
+The first byte is the LSB!
+
+each register have its own numberfy rule.
 
 <h3> How to Read register info  </h3>
 

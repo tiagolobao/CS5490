@@ -33,7 +33,7 @@
 */
 
 
-#ifndef CS5490_hthis->cSerial = new SoftwareSerial(rx,tx);
+#ifndef CS5490_h
 #define CS5490_h
 
 //Software Serial Library
