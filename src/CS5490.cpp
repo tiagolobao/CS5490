@@ -9,9 +9,9 @@
 
 
 /*
-	Purpose: Control an integrated circuit 
+	Purpose: Control an integrated circuit
 	Cirrus Logic - CS5490
-	
+
 	Used to measure electrical quantities
 
 	This is a FREE SOFTWARE. You can change
@@ -36,9 +36,9 @@ CS5490::CS5490(float mclk, int rx, int tx){
 
 	//Arduino Like
 	//this->cSerial = new SoftwareSerial(rx,tx);
-	
+
 	//ESP Like
-	this->cSerial = new SoftwareSerial(rx,tx,false,256);
+	this->cSerial = new SoftwareSerial(rx,tx);
 	//SoftwareSerial swSer(14, 12, false, 256);
 	//SoftwareSerial swSer(int receivePin, int transmitPin, bool inverted_logic, int buffer);
 }
@@ -56,14 +56,14 @@ void CS5490::begin(int baudRate){
 /* data bytes pass by data variable from this class */
 
 void CS5490::write(int page, int address){
-	
+
 	cSerial->flush();
 
 	uint8_t buffer = (pageByte | (uint8_t)page);
 	cSerial->write(buffer);
 	buffer = (writeByte | (uint8_t)address);
 	cSerial->write(buffer);
-	
+
 	delay(10); //Wait for data
 	for(int i; i<3 ; i++)
 		cSerial->write(this->data[i]);
@@ -73,7 +73,7 @@ void CS5490::write(int page, int address){
 /* data bytes pass by data variable from this class */
 
 void CS5490::read(int page, int address){
-	
+
 	cSerial->flush();
 
 	uint8_t buffer = (pageByte | (uint8_t)page);
@@ -81,10 +81,11 @@ void CS5490::read(int page, int address){
 	buffer = (readByte | (uint8_t)address);
 	cSerial->write(buffer);
 
-	//uint8_t data[3];
-	delay(10); //Wait for data
-	for(int i; i<3 ; i++)
-		this->data[i] = cSerial->read();
+	//Wait for 3 bytes to arrive
+	while(cSerial->available() < 3);
+	for(int i=0; i<3; i++){
+		data[i] = cSerial->read();
+	}
 }
 
 /******* Give an instruction by the serial communication *******/
@@ -111,6 +112,13 @@ uint32_t CS5490::numberfy(int dotPosition, bool unsign){
 	return buffer;
 }
 
+/**************************************************************/
+/*              PUBLIC METHODS - Read Register                */
+/**************************************************************/
+
+void CS5490::readRegister(int page, int address){
+	this->read(page, address);
+}
 
 /**************************************************************/
 /*              PUBLIC METHODS - Instructions                 */
@@ -127,6 +135,10 @@ void CS5490::wakeUp(){
 	this->instruct(3);
 }
 
+void CS5490::CC(){
+	this->instruct(21);
+}
+
 
 
 
@@ -137,7 +149,7 @@ void CS5490::wakeUp(){
 
 void CS5490::setOffsetV(int value){
 	//Page 16, Address 34
-	this->read(16,34);	
+	this->read(16,34);
 	return;
 }
 
@@ -161,5 +173,15 @@ int CS5490::getInstantV(){
 int CS5490::getRmsV(){
 	//Page 16, Address 7
 	this->read(16,7);
+	return 0;
+}
+
+int CS5490::getPeakV(){
+	this->read(0,36);
+	return 0;
+}
+
+int CS5490::getPeakI(){
+	this->read(0,37);
 	return 0;
 }

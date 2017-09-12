@@ -9,9 +9,9 @@
 
 
 /*
-	Purpose: Control an integrated circuit 
+	Purpose: Control an integrated circuit
 	Cirrus Logic - CS5490
-	
+
 	Used to measure electrical quantities
 
 	This is a FREE SOFTWARE. You can change
@@ -23,7 +23,7 @@
 ******************************************/
 
 
-/* 
+/*
 
 	Hardware important topics
 
@@ -33,7 +33,7 @@
 */
 
 
-#ifndef CS5490_h
+#ifndef CS5490_hthis->cSerial = new SoftwareSerial(rx,tx);
 #define CS5490_h
 
 //Software Serial Library
@@ -62,8 +62,8 @@
 Used to combine with the 6 last bits
 Ex: Select page number 3 -> 000011
 
- 10 000000    ==\  OR    ==\  
- 00 000011    ==/ GATE   ==/    10 000011 
+ 10 000000    ==\  OR    ==\
+ 00 000011    ==/ GATE   ==/    10 000011
 
 */
 
@@ -76,6 +76,7 @@ private:
 	float MCLK;
 	//uint32_t data[3];
 	SoftwareSerial *cSerial;
+	bool SS; //If using SoftwareSerial
 
 	void write(int page, int address);
 	void read(int page, int address);
@@ -85,11 +86,14 @@ private:
 
 public:
 
-	uint32_t data[3]; //Colocar novamente como private antes de concluir
+	uint8_t data[3]; //Colocar novamente como private antes de concluir
 
 	CS5490(float mclk, int rx, int tx);
 
 	void begin(int baudRate);
+
+	void readRegister(int page, int address);
+
 
  	/*** Measurements ***/
 	int getInstantV();
@@ -101,7 +105,7 @@ public:
 
 	int getActivePower();
 	int getReactivePower();
-	int getApparentPower();
+	int gsetApparentPower();
 
 	int getInstantReactive();
 	int getInstantActive();
@@ -109,7 +113,7 @@ public:
 	int getTotalActive();
 	int getTotalReactive();
 	int getTotalAApparent();
-  
+
 	int getPeakV();
 	int getPeakI();
 
@@ -118,8 +122,8 @@ public:
 	/*** Configuration ***/
 	void setDO(int mode);
 	void setBaudRate(int value);
-	
-	
+
+
 
 	/*** Calibration ***/
 
@@ -132,10 +136,10 @@ public:
 
 
 	void setPhaseCompensation(int mode, int phase);
-	
+
 	void setOffsetV(int value);
 	void setOffsetI(int value);
-	void setOffsetT(int value);	
+	void setOffsetT(int value);
 
 	void setCalibrationScale(int value);
 
@@ -143,6 +147,8 @@ public:
 	void reset();
 	void standby();
 	void wakeUp();
+	//Continous Convertion
+	void CC();
 
 };
 
