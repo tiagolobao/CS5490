@@ -11,24 +11,36 @@ void setup() {
   //600 é a velocidade default do CI para comunicação serial
   line.begin(600);
   //Inicializa a comunicação com o PC para debug
-  Serial.begin(9600);
+  Serial.begin(115200);
+
+  //Send 21 instruct
+  //Seta Conversão p/ continuo
+  line.CC();
 }
 
 void loop() {
- 
-  //Obtem informação da configuração de calibração do ganho de corrente
-  line.getGainI();
 
+  //Obtem informação da configuração de calibração do ganho de corrente
+  line.getInstantV();
 
   //Printa essa informação no Serial Monitor
-  Serial.println("A informação coletada é: ");
-  Serial.println(line.data[0]);
-  Serial.println(line.data[1]);
-  Serial.println(line.data[2]);
-  Serial.println("\n\n");
+  Serial.println("Valor instantâneo é: ");
+  Serial.println(line.data[0],HEX);
+  Serial.println(line.data[1],HEX);
+  Serial.println(line.data[2],HEX);
+  Serial.println("");
 
-  delay(5000);
+  //Obtem informação da configuração de calibração do ganho de corrente
+  line.getPeakI();
+
+  //Printa essa informação no Serial Monitor
+  Serial.println("Valor de pico é: ");
+  Serial.println(line.data[0],HEX);
+  Serial.println(line.data[1],HEX);
+  Serial.println(line.data[2],HEX);
+  Serial.println("");
+
+
+
+  delay(1000);
 }
-
-
-
