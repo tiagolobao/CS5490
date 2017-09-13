@@ -101,15 +101,29 @@ void CS5490::instruct(int value){
 
 /***** Return float based on data attribute of this class *****/
 
-uint32_t CS5490::numberfy(int dotPosition, bool unsign){
+double CS5490::toDouble(int LBSpow, bool unsign){
+
 	uint32_t buffer = 0;
-
-	//Contat bytes in a 32 bit word
-	buffer += this->data[0] << 16;
+	//Concat bytes in a 32 bit word
+	buffer += this->data[0];
 	buffer += this->data[1] << 8;
-	buffer += this->data[2];
+	buffer += this->data[2] << 16;
 
-	return buffer;
+	if(!unsign){ //Signed
+		bool MSB = this->data[2] & 0x80;
+		if(MSB){  //Negative number (2 complement)
+			buffer = ~buffer;
+			buffer += 1.0;
+			buffer /= pow(2,LSBpow);
+		}
+		else     //Positive number
+			buffer /= (pow(2,LSBpow)-1);
+	}
+	else{       //unsigned
+		buffer /= (pow(2,LSBpow)-1);
+	}
+
+	return (double)buffer;
 }
 
 /**************************************************************/

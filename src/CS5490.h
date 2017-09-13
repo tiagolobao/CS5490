@@ -82,7 +82,6 @@ private:
 	void read(int page, int address);
 	void instruct(int instruction);
 
-	uint32_t numberfy(int dotPosition, bool unsign);
 
 public:
 
@@ -91,7 +90,7 @@ public:
 	CS5490(float mclk, int rx, int tx);
 
 	void begin(int baudRate);
-
+	double toDouble(int LBSpow, bool unsign);
 	void readRegister(int page, int address);
 
 
