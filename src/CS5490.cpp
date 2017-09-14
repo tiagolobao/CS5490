@@ -101,7 +101,7 @@ void CS5490::instruct(int value){
 
 /***** Return float based on data attribute of this class *****/
 
-double CS5490::toDouble(int LBSpow, bool unsign){
+double CS5490::toDouble(int LSBpow, bool unsign){
 
 	uint32_t buffer = 0;
 	//Concat bytes in a 32 bit word
