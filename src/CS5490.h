@@ -53,9 +53,9 @@
 #define MSBsigned 2
 #define MSBunsigned 3
 
-
+/* Default values */
 #define MCLK_default 4.096
-
+#define baudRate_default 600
 
 // all comands templates
 #define readByte        0b00000000
