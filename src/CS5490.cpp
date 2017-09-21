@@ -55,18 +55,23 @@ void CS5490::begin(int baudRate){
 /******* Write a register by the serial communication *******/
 /* data bytes pass by data variable from this class */
 
-void CS5490::write(int page, int address){
+void CS5490::write(int page, int address, uint8_t data[]){
 
-	cSerial->flush();
+	uint8_t checksum = 0;
+	for(int i=0; i<3; i++)
+		checksum += 0xFF - checksum;
 
 	uint8_t buffer = (pageByte | (uint8_t)page);
 	cSerial->write(buffer);
 	buffer = (writeByte | (uint8_t)address);
 	cSerial->write(buffer);
 
-	delay(10); //Wait for data
+	//Write data
 	for(int i; i<3 ; i++)
-		cSerial->write(this->data[i]);
+		cSerial->write(data[i]);
+	//WriteChecksum
+	cSerial->write(checksum);
+
 }
 
 /******* Read a register by the serial communication *******/

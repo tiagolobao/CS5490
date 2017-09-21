@@ -82,7 +82,7 @@ private:
 	SoftwareSerial *cSerial;
 	bool SS; //If using SoftwareSerial
 
-	void write(int page, int address);
+	void write(int page, int address, uint8_t data[]);
 	void read(int page, int address);
 	void instruct(int instruction);
 
@@ -95,8 +95,11 @@ public:
 
 	void begin(int baudRate);
 	double toDouble(int LBSpow, int MSBoption);
+	uint8_t* toByteArray(int LBSpow, int MSBoption);
 	void readRegister(int page, int address);
 
+	void setData(double input);
+	void setData(uint8_t input[]);
 
  	/*** Measurements ***/
 	int getInstantV();
