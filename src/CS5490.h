@@ -48,6 +48,10 @@
 #include <inttypes.h>
 #include "Arduino.h" //Arduino Library
 
+/* For toDouble method */
+#define MSBnull 1
+#define MSBsigned 2
+#define MSBunsigned 3
 
 
 #define MCLK_default 4.096
@@ -90,7 +94,7 @@ public:
 	CS5490(float mclk, int rx, int tx);
 
 	void begin(int baudRate);
-	double toDouble(int LBSpow, bool unsign);
+	double toDouble(int LBSpow, int MSBoption);
 	void readRegister(int page, int address);
 
 
