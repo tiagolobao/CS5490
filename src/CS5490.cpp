@@ -59,14 +59,21 @@ void CS5490::write(int page, int address){
 
 	cSerial->flush();
 
+	//Select page and address
 	uint8_t buffer = (pageByte | (uint8_t)page);
 	cSerial->write(buffer);
 	buffer = (writeByte | (uint8_t)address);
 	cSerial->write(buffer);
 
-	delay(10); //Wait for data
-	for(int i; i<3 ; i++)
+	//Send information
+	for(int i=0; i<3 ; i++){
+		data[i] = value & 0x000000FF;
 		cSerial->write(this->data[i]);
+		value >>= 8;
+	}
+	//Calculate and send checksum
+	buffer = 0xFF - data[0] - data[1] - data[2];
+	cSerial->write(buffer);
 }
 
 /******* Read a register by the serial communication *******/
