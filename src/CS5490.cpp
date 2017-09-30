@@ -220,24 +220,98 @@ int CS5490::getGainI(){
 /*              PUBLIC METHODS - Measurements                 */
 /**************************************************************/
 
-int CS5490::getInstantV(){
+double CS5490::getPeakV(){
+	//Page 0, Address 36
+	this->read(0,36);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getPeakI(){
+	//Page 0, Address 37
+	this->read(0,37);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getInstI(){
+	//Page 16, Address 2
+	this->read(16,2);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getInstV(){
 	//Page 16, Address 3
 	this->read(16,3);
-	return 0;
+	return this->toDouble(23, MSBsigned);
 }
 
-int CS5490::getRmsV(){
+double CS5490::getInstP(){
+	//Page 16, Address 4
+	this->read(16,4);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getAvgP(){
+	//Page 16, Address 5
+	this->read(16,5);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getRmsI(){
+	//Page 16, Address 6
+	this->read(16,6);
+	return this->toDouble(23, MSBunsigned);
+}
+
+double CS5490::getRmsV(){
 	//Page 16, Address 7
 	this->read(16,7);
-	return 0;
+	return this->toDouble(23, MSBunsigned);
 }
 
-int CS5490::getPeakV(){
-	this->read(0,36);
-	return 0;
+double CS5490::getAvgQ(){
+	//Page 16, Address 15
+	this->read(16,15);
+	return this->toDouble(23, MSBsigned);
 }
 
-int CS5490::getPeakI(){
-	this->read(0,37);
-	return 0;
+double CS5490::getInstQ(){
+	//Page 16, Address 16
+	this->read(16,16);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getAvgS(){
+	//Page 16, Address 20
+	this->read(16,20);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getPF(){
+	//Page 16, Address 21
+	this->read(16,21);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getTotalP(){
+	//Page 16, Address 29
+	this->read(16,29);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getTotalS(){
+	//Page 16, Address 30
+	this->read(16,30);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getTotalQ(){
+	//Page 16, Address 31
+	this->read(16,31);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getFreq(){
+	//Page 16, Address 49
+	this->read(16,49);
+	return this->toDouble(23, MSBsigned);
 }
