@@ -55,9 +55,11 @@ void CS5490::begin(int baudRate){
 /******* Write a register by the serial communication *******/
 /* data bytes pass by data variable from this class */
 
-void CS5490::write(int page, int address){
+void CS5490::write(int page, int address, uint8_t data[]){
 
-	cSerial->flush();
+	uint8_t checksum = 0;
+	for(int i=0; i<3; i++)
+		checksum += 0xFF - checksum;
 
 	//Select page and address
 	uint8_t buffer = (pageByte | (uint8_t)page);
@@ -106,31 +108,64 @@ void CS5490::instruct(int value){
 }
 
 
-/***** Return float based on data attribute of this class *****/
+/*
+  Function: toDouble
+  Transforms a 24 bit number to a double number for easy processing data
 
-double CS5490::toDouble(int LSBpow, bool unsign){
+  Param:
+  data[] => Array with size 3. Each uint8_t is an 8 byte number received from CS5490
+  LSBpow => Expoent specified from datasheet of the less significant bit
+  MSBoption => Information of most significant bit case. It can be only three values:
+    MSBnull (1)  The MSB is a Don't Care bit
+    MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
+    MSBunsigned (3) The MSB is a positive value, the default case.
+
+*/
+double CS5490::toDouble(int LSBpow, int MSBoption){
 
 	uint32_t buffer = 0;
+	double output = 0.0;
+	bool MSB;
+
 	//Concat bytes in a 32 bit word
 	buffer += this->data[0];
 	buffer += this->data[1] << 8;
 	buffer += this->data[2] << 16;
 
-	if(!unsign){ //Signed
-		bool MSB = this->data[2] & 0x80;
-		if(MSB){  //Negative number (2 complement)
-			buffer = ~buffer;
-			buffer += 1.0;
-			buffer /= pow(2,LSBpow);
-		}
-		else     //Positive number
-			buffer /= (pow(2,LSBpow)-1);
-	}
-	else{       //unsigned
-		buffer /= (pow(2,LSBpow)-1);
-	}
+  switch(MSBoption){
 
-	return (double)buffer;
+    case MSBnull:
+      this->data[2] &= ~(1 << 7); //Clear MSB
+      buffer += this->data[2] << 16;
+      output = (double)buffer;
+      output /= pow(2,LSBpow);
+    break;
+
+    case MSBsigned:
+      MSB = data[2] & 0x80;
+  		if(MSB){  //- (2 complement conversion)
+  			buffer = ~buffer;
+  			//Clearing the first 8 bits
+  			for(int i=24; i<32; i++)
+  			  buffer &= ~(1 << i);
+  			output = (double)buffer + 1.0;
+  			output /= -pow(2,LSBpow);
+  		}
+  		else{     //+
+  		  output = (double)buffer;
+  			output /= (pow(2,LSBpow)-1.0);
+  		}
+    break;
+
+    default:
+    case MSBunsigned:
+      output = (double)buffer;
+  		output /= pow(2,LSBpow);
+    break;
+
+  }
+
+	return output;
 }
 
 /**************************************************************/

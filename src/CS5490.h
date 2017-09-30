@@ -48,10 +48,14 @@
 #include <inttypes.h>
 #include "Arduino.h" //Arduino Library
 
+/* For toDouble method */
+#define MSBnull 1
+#define MSBsigned 2
+#define MSBunsigned 3
 
-
+/* Default values */
 #define MCLK_default 4.096
-
+#define baudRate_default 600
 
 // all comands templates
 #define readByte        0b00000000
@@ -78,7 +82,7 @@ private:
 	SoftwareSerial *cSerial;
 	bool SS; //If using SoftwareSerial
 
-	void write(int page, int address);
+	void write(int page, int address, uint8_t data[]);
 	void read(int page, int address);
 	void instruct(int instruction);
 
@@ -90,9 +94,12 @@ public:
 	CS5490(float mclk, int rx, int tx);
 
 	void begin(int baudRate);
-	double toDouble(int LBSpow, bool unsign);
+	double toDouble(int LBSpow, int MSBoption);
+	uint8_t* toByteArray(int LBSpow, int MSBoption);
 	void readRegister(int page, int address);
 
+	void setData(double input);
+	void setData(uint8_t input[]);
 
  	/*** Measurements ***/
 	int getInstantV();

@@ -1,6 +1,10 @@
 CS5490	KEYWORD1
-instruct	KEYWORD2
-reset     KEYWORD2
+
 begin KEYWORD2
 
 MCLK_default	LITERAL1
+baudRate_default	LITERAL1
+
+MSBnull LITERAL1
+MSBsigned LITERAL1
+MSBunsigned LITERAL1
