@@ -16,7 +16,7 @@
 
 	This is a FREE SOFTWARE. You can change
 	it or distribute. If you notice any issues
-	or suggestions, contact me
+	or suggestions, contact me.
 
 
 
@@ -81,80 +81,77 @@ private:
 	//uint32_t data[3];
 	SoftwareSerial *cSerial;
 	bool SS; //If using SoftwareSerial
+	uint8_t data[3]; //data buffer for read and write
 
 	void write(int page, int address, uint8_t data[]);
 	void read(int page, int address);
 	void instruct(int instruction);
-
+	double toDouble(int LBSpow, int MSBoption);
 
 public:
 
-	uint8_t data[3]; //Colocar novamente como private antes de concluir
-
 	CS5490(float mclk, int rx, int tx);
-
 	void begin(int baudRate);
-	double toDouble(int LBSpow, int MSBoption);
-	uint8_t* toByteArray(int LBSpow, int MSBoption);
-	void readRegister(int page, int address);
 
+	/* Not implemented functions
 	void setData(double input);
 	void setData(uint8_t input[]);
+	uint8_t* toByteArray(int LBSpow, int MSBoption);
+	---------------------- */
 
- 	/*** Measurements ***/
-	int getInstantV();
-	int getInstantI();
-	int getRmsI();
-	int getRmsV();
-
-	int getPowerFactor();
-
-	int getActivePower();
-	int getReactivePower();
-	int gsetApparentPower();
-
-	int getInstantReactive();
-	int getInstantActive();
-
-	int getTotalActive();
-	int getTotalReactive();
-	int getTotalAApparent();
-
-	int getPeakV();
-	int getPeakI();
-
-	int getTemperature();
-
-	/*** Configuration ***/
-	void setDO(int mode);
-	void setBaudRate(int value);
-
-
+	/*** Instructions ***/
+	void reset();
+	void standby();
+	void wakeUp();
+	void CC(); //Continous Convertion
 
 	/*** Calibration ***/
 
+	int getGainI();
+
+	/* Not implemented functions
 	void setGainSys(int value);
 	void setGainV(int value);
 	void setGainI(int value);
 	void setGainT(int value);
-
-	int getGainI();
-
-
 	void setPhaseCompensation(int mode, int phase);
-
 	void setOffsetV(int value);
 	void setOffsetI(int value);
 	void setOffsetT(int value);
-
 	void setCalibrationScale(int value);
+	------------------------*/
 
-	/* Instructions */
-	void reset();
-	void standby();
-	void wakeUp();
-	//Continous Convertion
-	void CC();
+ 	/*** Measurements ***/
+
+	double getPeakV();
+	double getPeakI();
+
+	double getInstI();
+	double getInstV();
+	double getInstP();
+
+	double getRmsI();
+	double getRmsV();
+
+	double getAvgP();
+	double getAvgQ();
+	double getAvgS();
+
+	double getInstQ();
+	double getPF();
+
+	double getTotalP();
+	double getTotalS();
+	double getTotalQ();
+
+	double getFreq();
+
+	/*** Configuration ***/
+
+	/* Not implemented functions
+	void setDO(int mode);
+	void setBaudRate(int value);
+	-------------------------*/
 
 };
 

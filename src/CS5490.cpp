@@ -33,14 +33,8 @@
 
 CS5490::CS5490(float mclk, int rx, int tx){
 	this->MCLK = mclk;
-
-	//Arduino Like
-	//this->cSerial = new SoftwareSerial(rx,tx);
-
-	//ESP Like
+	//ESP Like & Arduino Like
 	this->cSerial = new SoftwareSerial(rx,tx);
-	//SoftwareSerial swSer(14, 12, false, 256);
-	//SoftwareSerial swSer(int receivePin, int transmitPin, bool inverted_logic, int buffer);
 }
 
 void CS5490::begin(int baudRate){
@@ -168,13 +162,6 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
 	return output;
 }
 
-/**************************************************************/
-/*              PUBLIC METHODS - Read Register                */
-/**************************************************************/
-
-void CS5490::readRegister(int page, int address){
-	this->read(page, address);
-}
 
 /**************************************************************/
 /*              PUBLIC METHODS - Instructions                 */
@@ -202,13 +189,9 @@ void CS5490::CC(){
 /*              PUBLIC METHODS - Calibration                  */
 /**************************************************************/
 
+/* SET */
 
-void CS5490::setOffsetV(int value){
-	//Page 16, Address 34
-	this->read(16,34);
-	return;
-}
-
+/* GET */
 int CS5490::getGainI(){
 	//Page 16, Address 33
 	this->read(16,33);
@@ -250,12 +233,6 @@ double CS5490::getInstP(){
 	return this->toDouble(23, MSBsigned);
 }
 
-double CS5490::getAvgP(){
-	//Page 16, Address 5
-	this->read(16,5);
-	return this->toDouble(23, MSBsigned);
-}
-
 double CS5490::getRmsI(){
 	//Page 16, Address 6
 	this->read(16,6);
@@ -268,21 +245,27 @@ double CS5490::getRmsV(){
 	return this->toDouble(23, MSBunsigned);
 }
 
+double CS5490::getAvgP(){
+	//Page 16, Address 5
+	this->read(16,5);
+	return this->toDouble(23, MSBsigned);
+}
+
 double CS5490::getAvgQ(){
 	//Page 16, Address 15
 	this->read(16,15);
 	return this->toDouble(23, MSBsigned);
 }
 
-double CS5490::getInstQ(){
-	//Page 16, Address 16
-	this->read(16,16);
-	return this->toDouble(23, MSBsigned);
-}
-
 double CS5490::getAvgS(){
 	//Page 16, Address 20
 	this->read(16,20);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getInstQ(){
+	//Page 16, Address 16
+	this->read(16,16);
 	return this->toDouble(23, MSBsigned);
 }
 
