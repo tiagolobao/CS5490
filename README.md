@@ -6,9 +6,9 @@ Biblioteca Arduino/ESP Para Comunicação com o Chip Cirrus Logic CS5490
 Arduino Library / ESP for Communication with the Cirrus Logic CS5490 Chip
 
 
-## Contributing [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
+## Contributing [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/tiagolobao/CS5490/issues)
 
-## Warning [![code status](https://img.shields.io/badge/code-incomplete-red.svg?style=flat)](https://github.com/dwyl/esta/issues)
+## Warning [![code status](https://img.shields.io/badge/code-incomplete-red.svg?style=flat)](https://github.com/tiagolobao/CS5490/issues)
 
 <h2>Informações Importantes / Important Information</h2>
 
