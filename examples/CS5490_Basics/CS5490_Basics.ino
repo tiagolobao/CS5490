@@ -1,5 +1,4 @@
 
-
 #include<CS5490.h>
 
 
@@ -7,34 +6,34 @@ CS5490 line(MCLK_default,14,12);
 
 
 void setup() {
-  //Inicializa a comunicação com o CS5490
-  //600 é a velocidade default do CI para comunicação serial
+  //Initializing communication with CS5490
+  //600 is the default baud rate velocity.
   line.begin(600);
-  //Inicializa a comunicação com o PC para debug
+  //Initializing communication arduino/PC to show results in Monitor Serial
   Serial.begin(115200);
 
-  //Send 21 instruct
-  //Seta Conversão p/ continuo
+
+  //Turns Continous conversion ON. Necessary for some measurments
   line.CC();
 }
 
 void loop() {
 
-  //Obtem informação da configuração de calibração do ganho de corrente
-  line.getInstantV();
+  //Get instant voltage number from CS5490
+  line.getInstV();
 
-  //Printa essa informação no Serial Monitor
-  Serial.println("Valor instantâneo é: ");
+  //Prints last "get" method in Serial Monitor
+  Serial.println("The instant voltage value is: ");
   Serial.println(line.data[0],HEX);
   Serial.println(line.data[1],HEX);
   Serial.println(line.data[2],HEX);
   Serial.println("");
 
-  //Obtem informação da configuração de calibração do ganho de corrente
+  //Get the current peak information from CS5490
   line.getPeakI();
 
-  //Printa essa informação no Serial Monitor
-  Serial.println("Valor de pico é: ");
+  //Prints last "get" method in Serial Monitor
+  Serial.println("The peak current value is: ");
   Serial.println(line.data[0],HEX);
   Serial.println(line.data[1],HEX);
   Serial.println(line.data[2],HEX);

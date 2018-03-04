@@ -49,7 +49,7 @@ void CS5490::begin(int baudRate){
 /******* Write a register by the serial communication *******/
 /* data bytes pass by data variable from this class */
 
-void CS5490::write(int page, int address, uint8_t data[]){
+void CS5490::write(int page, int address, long value){
 
 	uint8_t checksum = 0;
 	for(int i=0; i<3; i++)

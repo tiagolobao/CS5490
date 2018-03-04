@@ -81,14 +81,16 @@ private:
 	//uint32_t data[3];
 	SoftwareSerial *cSerial;
 	bool SS; //If using SoftwareSerial
-	uint8_t data[3]; //data buffer for read and write
 
-	void write(int page, int address, uint8_t data[]);
 	void read(int page, int address);
 	void instruct(int instruction);
 	double toDouble(int LBSpow, int MSBoption);
 
 public:
+
+	//Some temporary public methods and atributes
+	void write(int page, int address, long value);
+	uint8_t data[3]; //data buffer for read and write
 
 	CS5490(float mclk, int rx, int tx);
 	void begin(int baudRate);
