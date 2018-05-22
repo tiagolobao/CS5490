@@ -252,8 +252,8 @@ double CS5490::getAvgP(){
 }
 
 double CS5490::getAvgQ(){
-	//Page 16, Address 15
-	this->read(16,15);
+	//Page 16, Address 14
+	this->read(16,14);
 	return this->toDouble(23, MSBsigned);
 }
 
@@ -264,8 +264,8 @@ double CS5490::getAvgS(){
 }
 
 double CS5490::getInstQ(){
-	//Page 16, Address 16
-	this->read(16,16);
+	//Page 16, Address 15
+	this->read(16,15);
 	return this->toDouble(23, MSBsigned);
 }
 
