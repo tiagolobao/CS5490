@@ -76,7 +76,7 @@ Ex: Select page number 3 -> 000011
 class CS5490{
 
 
-private:
+public:
 	float MCLK;
 	//uint32_t data[3];
 	SoftwareSerial *cSerial;
@@ -85,8 +85,6 @@ private:
 	void read(int page, int address);
 	void instruct(int instruction);
 	double toDouble(int LBSpow, int MSBoption);
-
-public:
 
 	//Some temporary public methods and atributes
 	void write(int page, int address, long value);
