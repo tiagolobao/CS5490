@@ -191,10 +191,19 @@ void CS5490::CC(){
 
 
 /**************************************************************/
-/*              PUBLIC METHODS - Calibration                  */
+/*       PUBLIC METHODS - Calibration and Configuration       */
 /**************************************************************/
 
 /* SET */
+void CS5490::setBaudRate(long value){
+	uint32_t hexBR = ceil(value*524288.0/MCLK);
+	if (hexBR > 65535) hexBR = 65535;
+	hexBR += 0x020000;
+	this->write(0x80,0x07,hexBR);
+	cSerial->end();
+	cSerial->begin(hexBR);
+	return;
+}
 
 /* GET */
 int CS5490::getGainI(){

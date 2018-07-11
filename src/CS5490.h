@@ -115,6 +115,7 @@ public:
 	/*** Calibration ***/
 
 	int getGainI();
+	void setBaudRate(long value);
 
 	/* Not implemented functions
 	void setGainSys(int value);
