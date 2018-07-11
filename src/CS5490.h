@@ -80,12 +80,14 @@ class CS5490{
 public:
 	float MCLK;
 
-	#ifndef ARDUINO_NodeMCU_32S
+	#ifndef ARDUINO_NodeMCU_32S //Arduino & ESP8622
 		SoftwareSerial *cSerial;
+		CS5490(float mclk, int rx, int tx);
 	#endif
 
-	#ifdef ARDUINO_NodeMCU_32S
+	#ifdef ARDUINO_NodeMCU_32S //ESP32
 		HardwareSerial *cSerial;
+			CS5490(float mclk);
 	#endif
 
 	void read(int page, int address);
@@ -96,7 +98,6 @@ public:
 	void write(int page, int address, long value);
 	uint8_t data[3]; //data buffer for read and write
 
-	CS5490(float mclk, int rx, int tx);
 	void begin(int baudRate);
 
 	/* Not implemented functions
