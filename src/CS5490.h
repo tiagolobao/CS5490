@@ -78,9 +78,7 @@ class CS5490{
 
 public:
 	float MCLK;
-	//uint32_t data[3];
 	SoftwareSerial *cSerial;
-	bool SS; //If using SoftwareSerial
 
 	void read(int page, int address);
 	void instruct(int instruction);

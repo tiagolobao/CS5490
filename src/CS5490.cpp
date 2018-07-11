@@ -24,16 +24,13 @@
 
 
 #include "CS5490.h"
-#include "Arduino.h"
 
-#include <SoftwareSerial.h> //Software Serial Library
 
 
 /******* Init CS5490 *******/
 
 CS5490::CS5490(float mclk, int rx, int tx){
 	this->MCLK = mclk;
-	//ESP Like & Arduino Like
 	this->cSerial = new SoftwareSerial(rx,tx);
 }
 
