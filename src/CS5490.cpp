@@ -28,11 +28,19 @@
 
 
 /******* Init CS5490 *******/
+#ifdef ARDUINO_NodeMCU_32S //For Esp32
+CS5490::CS5490(float mclk){
+	this->MCLK = mclk;
+	this->cSerial = &Serial2;
+}
+#endif
 
+#ifndef ARDUINO_NodeMCU_32S //For Arduino & ESP8622
 CS5490::CS5490(float mclk, int rx, int tx){
 	this->MCLK = mclk;
 	this->cSerial = new SoftwareSerial(rx,tx);
 }
+#endif
 
 void CS5490::begin(int baudRate){
 	cSerial->begin(baudRate);

@@ -37,10 +37,11 @@
 #define CS5490_h
 
 //Software Serial Library
-#ifndef  SoftwareSerial.h
-#include <SoftwareSerial.h>
+#ifndef ARDUINO_NodeMCU_32S //For Arduino & Others
+	#ifndef  SoftwareSerial.h
+		#include <SoftwareSerial.h>
+	#endif
 #endif
-
 
 // Used .h files
 #include <stdio.h>
@@ -78,7 +79,14 @@ class CS5490{
 
 public:
 	float MCLK;
-	SoftwareSerial *cSerial;
+
+	#ifndef ARDUINO_NodeMCU_32S
+		SoftwareSerial *cSerial;
+	#endif
+
+	#ifdef ARDUINO_NodeMCU_32S
+		HardwareSerial *cSerial;
+	#endif
 
 	void read(int page, int address);
 	void instruct(int instruction);
