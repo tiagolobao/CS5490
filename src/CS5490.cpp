@@ -196,12 +196,13 @@ void CS5490::CC(){
 
 /* SET */
 void CS5490::setBaudRate(long value){
-	uint32_t hexBR = ceil(value*524288.0/MCLK);
+	uint32_t hexBR = ceil(value*0.5242880/MCLK);
 	if (hexBR > 65535) hexBR = 65535;
 	hexBR += 0x020000;
 	this->write(0x80,0x07,hexBR);
+	delay(100);
 	cSerial->end();
-	cSerial->begin(hexBR);
+	cSerial->begin(value);
 	return;
 }
 
