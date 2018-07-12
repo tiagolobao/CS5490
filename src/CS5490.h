@@ -36,15 +36,14 @@
 #ifndef CS5490_h
 #define CS5490_h
 
+// Used .h files
+#include "Arduino.h" //Arduino Library
 //Software Serial Library
 #ifndef ARDUINO_NodeMCU_32S //For Arduino & Others
 	#ifndef  SoftwareSerial.h
 		#include <SoftwareSerial.h>
 	#endif
 #endif
-
-// Used .h files
-#include "Arduino.h" //Arduino Library
 
 /* For toDouble method */
 #define MSBnull 1
@@ -112,7 +111,6 @@ public:
 	/*** Calibration ***/
 
 	int getGainI();
-	void setBaudRate(long value);
 
 	/* Not implemented functions
 	void setGainSys(int value);
@@ -153,10 +151,11 @@ public:
 
 	/*** Configuration ***/
 
+	void setBaudRate(long value);
 	/* Not implemented functions
 	void setDO(int mode);
-	void setBaudRate(int value);
 	-------------------------*/
+
 
 };
 
