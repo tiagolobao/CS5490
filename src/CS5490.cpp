@@ -215,7 +215,7 @@ void CS5490::setBaudRate(long value){
 int CS5490::getGainI(){
 	//Page 16, Address 33
 	this->read(16,33);
-	return 0;
+	return this->toDouble(22,MSBunsigned);
 }
 
 
