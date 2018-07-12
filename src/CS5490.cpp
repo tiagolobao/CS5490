@@ -183,8 +183,16 @@ void CS5490::wakeUp(){
 	this->instruct(3);
 }
 
-void CS5490::CC(){
+void CS5490::singConv(){
+	this->instruct(20);
+}
+
+void CS5490::contConv(){
 	this->instruct(21);
+}
+
+void CS5490::haltConv(){
+	this->instruct(24);
 }
 
 

@@ -106,7 +106,9 @@ public:
 	void reset();
 	void standby();
 	void wakeUp();
-	void CC(); //Continous Convertion
+	void singConv();
+	void contConv();
+	void haltConv();
 
 	/*** Calibration ***/
 
