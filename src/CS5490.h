@@ -44,9 +44,6 @@
 #endif
 
 // Used .h files
-#include <stdio.h>
-#include <string.h>
-#include <inttypes.h>
 #include "Arduino.h" //Arduino Library
 
 /* For toDouble method */
