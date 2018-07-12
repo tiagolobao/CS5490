@@ -196,11 +196,16 @@ void CS5490::CC(){
 
 /* SET */
 void CS5490::setBaudRate(long value){
+
+	//Calculate the correct binary value
 	uint32_t hexBR = ceil(value*0.5242880/MCLK);
 	if (hexBR > 65535) hexBR = 65535;
 	hexBR += 0x020000;
+
 	this->write(0x80,0x07,hexBR);
-	delay(100);
+	delay(100); //To avoid bugs from ESP32
+
+	//Reset Serial communication from controller
 	cSerial->end();
 	cSerial->begin(value);
 	return;
