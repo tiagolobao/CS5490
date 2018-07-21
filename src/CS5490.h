@@ -152,7 +152,7 @@ public:
 	double getFreq();
 
 	/*** Configuration ***/
-
+	long getBaudRate();
 	void setBaudRate(long value);
 	/* Not implemented functions
 	void setDO(int mode);

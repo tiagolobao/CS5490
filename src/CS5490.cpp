@@ -226,6 +226,14 @@ int CS5490::getGainI(){
 	return this->toDouble(22,MSBunsigned);
 }
 
+long CS5490::getBaudRate(){
+	this->read(0,7);
+	uint32_t buffer = this->data[0];
+	buffer += this->data[1] << 8;
+	buffer += this->data[2] << 16;
+	buffer -= 0x020000;
+	return ( (buffer/0.5242880)*MCLK );
+}
 
 /**************************************************************/
 /*              PUBLIC METHODS - Measurements                 */
