@@ -158,7 +158,8 @@ public:
 	void setDO(int mode);
 	-------------------------*/
 
-
+	/* EXTRA METHOD */
+	long readReg(int page, int address);
 };
 
 #endif

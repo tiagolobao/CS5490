@@ -334,3 +334,18 @@ double CS5490::getFreq(){
 	this->read(16,49);
 	return this->toDouble(23, MSBsigned);
 }
+
+
+/**************************************************************/
+/*              PUBLIC METHODS - Read Register                */
+/**************************************************************/
+
+long CS5490::readReg(int page, int address){
+	long value = 0;
+	this->read(page, address);
+	for(int i=0; i<3; i++){
+		value += data[2-i];
+		value <<= 8;
+	}
+	return value;
+}
