@@ -1,8 +1,16 @@
 
 #include<CS5490.h>
 
+#define rx 14
+#define tx 12
 
-CS5490 line(MCLK_default,14,12);
+/* Choose your board */
+
+/* Arduino UNO and ESP8622 */
+CS5490 line(MCLK_default,rx,tx);
+
+/* ESP and MEGA  (Uses Serial2)*/
+//CS5490 line(MCLK_default);
 
 
 void setup() {
@@ -11,35 +19,19 @@ void setup() {
   line.begin(600);
   //Initializing communication arduino/PC to show results in Monitor Serial
   Serial.begin(115200);
-
-
-  //Turns Continous conversion ON. Necessary for some measurments
-  line.CC();
 }
 
 void loop() {
 
-  //Get instant voltage number from CS5490
-  line.getInstV();
+  double foo = line.getFreq();
+  double bar = line.getTime();
 
-  //Prints last "get" method in Serial Monitor
-  Serial.println("The instant voltage value is: ");
-  Serial.println(line.data[0],HEX);
-  Serial.println(line.data[1],HEX);
-  Serial.println(line.data[2],HEX);
+  Serial.print("The Line to Sample Frequency Ratio is: ");
+  Serial.println( foo , 10 ); //10 is the number of decimal places
+
+  Serial.print("The System Time is: ");
+  Serial.println( bar );
+
   Serial.println("");
-
-  //Get the current peak information from CS5490
-  line.getPeakI();
-
-  //Prints last "get" method in Serial Monitor
-  Serial.println("The peak current value is: ");
-  Serial.println(line.data[0],HEX);
-  Serial.println(line.data[1],HEX);
-  Serial.println(line.data[2],HEX);
-  Serial.println("");
-
-
-
   delay(1000);
 }
