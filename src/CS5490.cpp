@@ -335,6 +335,11 @@ double CS5490::getFreq(){
 	return this->toDouble(23, MSBsigned);
 }
 
+double CS5490::getTime(){
+	//Page 16, Address 49
+	this->read(16,61);
+	return this->toDouble(0, MSBunsigned);
+}
 
 /**************************************************************/
 /*              PUBLIC METHODS - Read Register                */

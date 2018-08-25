@@ -151,6 +151,8 @@ public:
 
 	double getFreq();
 
+	double getTime();
+
 	/*** Configuration ***/
 	long getBaudRate();
 	void setBaudRate(long value);
