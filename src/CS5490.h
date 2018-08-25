@@ -14,11 +14,7 @@
 
 	Used to measure electrical quantities
 
-	This is a FREE SOFTWARE. You can change
-	it or distribute. If you notice any issues
-	or suggestions, contact me.
-
-
+	MIT License
 
 ******************************************/
 
@@ -89,10 +85,6 @@ public:
 		HardwareSerial *cSerial;
 			CS5490(float mclk);
 	#endif
-
-	void read(int page, int address);
-	void instruct(int instruction);
-	double toDouble(int LBSpow, int MSBoption);
 
 	//Some temporary public methods and atributes
 	void write(int page, int address, long value);

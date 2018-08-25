@@ -14,11 +14,7 @@
 
 	Used to measure electrical quantities
 
-	This is a FREE SOFTWARE. You can change
-	it or distribute. If you notice any issues
-	or suggestions, contact me
-
-
+	MIT License
 
 ******************************************/
 
