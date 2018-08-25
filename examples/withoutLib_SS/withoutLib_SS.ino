@@ -8,7 +8,7 @@ only for ARDUINO UNO, ESP8622 and others
 
 #include <SoftwareSerial.h>
 
-#define rx 14
+#define rx 13
 #define tx 12
 
 SoftwareSerial mySerial(rx, tx); // RX, TX
