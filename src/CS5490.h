@@ -68,7 +68,7 @@ Ex: Select page number 3 -> 000011
 class CS5490{
 
 private:
-	void read(intx page, int address);
+	void read(int page, int address);
 	void instruct(int instruction);
 	double toDouble(int LBSpow, int MSBoption);
 
