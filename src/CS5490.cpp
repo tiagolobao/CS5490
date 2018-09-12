@@ -267,13 +267,13 @@ double CS5490::getInstP(){
 double CS5490::getRmsI(){
 	//Page 16, Address 6
 	this->read(16,6);
-	return this->toDouble(23, MSBunsigned);
+	return this->toDouble(24, MSBunsigned);
 }
 
 double CS5490::getRmsV(){
 	//Page 16, Address 7
 	this->read(16,7);
-	return this->toDouble(23, MSBunsigned);
+	return this->toDouble(24, MSBunsigned);
 }
 
 double CS5490::getAvgP(){
