@@ -31,9 +31,9 @@
 
 // Used .h files
 #include "Arduino.h" //Arduino Library
-//Software Serial Library
-#ifndef ARDUINO_NodeMCU_32S //For Arduino & Others
-	#ifndef  SoftwareSerial.h
+
+#if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
+	#ifndef SoftwareSerial
 		#include <SoftwareSerial.h>
 	#endif
 #endif
@@ -72,14 +72,12 @@ public:
 
 	float MCLK;
 
-	#ifndef ARDUINO_NodeMCU_32S //Arduino & ESP8622
+	#if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
 		SoftwareSerial *cSerial;
 		CS5490(float mclk, int rx, int tx);
-	#endif
-
-	#ifdef ARDUINO_NodeMCU_32S //ESP32
+	#else
 		HardwareSerial *cSerial;
-			CS5490(float mclk);
+		CS5490(float mclk);
 	#endif
 
 	//Some temporary public methods and atributes
