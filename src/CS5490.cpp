@@ -2,8 +2,6 @@
 
 	Author: Tiago Britto Lobão
 	tiago.blobao@gmail.com
-	Year: 2017 Version: 0.0.1
-	Year: 2018 Version 1.0.2
 */
 
 
