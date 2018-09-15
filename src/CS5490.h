@@ -65,12 +65,11 @@ Ex: Select page number 3 -> 000011
 
 class CS5490{
 
-private:
+public:
 	void read(int page, int address);
 	void instruct(int instruction);
 	double toDouble(int LBSpow, int MSBoption);
 
-public:
 	float MCLK;
 
 	#ifndef ARDUINO_NodeMCU_32S //Arduino & ESP8622
