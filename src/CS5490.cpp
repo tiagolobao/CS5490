@@ -106,7 +106,7 @@ void CS5490::instruct(int value){
 
   Param:
   data[] => Array with size 3. Each uint8_t is an 8 byte number received from CS5490
-  LSBpow => Expoent specified from datasheet of the less significant bit
+  LSBpow => Exponent specified from datasheet of the less significant bit
   MSBoption => Information of most significant bit case. It can be only three values:
     MSBnull (1)  The MSB is a Don't Care bit
     MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
@@ -265,13 +265,13 @@ double CS5490::getInstP(){
 double CS5490::getRmsI(){
 	//Page 16, Address 6
 	this->read(16,6);
-	return this->toDouble(23, MSBunsigned);
+	return this->toDouble(24, MSBunsigned);
 }
 
 double CS5490::getRmsV(){
 	//Page 16, Address 7
 	this->read(16,7);
-	return this->toDouble(23, MSBunsigned);
+	return this->toDouble(24, MSBunsigned);
 }
 
 double CS5490::getAvgP(){
@@ -329,7 +329,7 @@ double CS5490::getFreq(){
 }
 
 double CS5490::getTime(){
-	//Page 16, Address 49
+	//Page 16, Address 61
 	this->read(16,61);
 	return this->toDouble(0, MSBunsigned);
 }
