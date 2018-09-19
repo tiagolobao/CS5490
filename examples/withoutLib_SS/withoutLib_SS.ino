@@ -1,5 +1,5 @@
 /*
-  1 - THIS DOES NOT USES CS5490 LIBRARY, use only if you want to understand
+  1 - THIS EXAMPLE DOES NOT USES CS5490 LIBRARY, use only if you want to understand
 only if you are having some trouble or needs to understante how it works
 
   2 - THIS EXAMPLES USES SoftwareSerial library, it means that will be useful
@@ -8,35 +8,47 @@ only for ARDUINO UNO, ESP8622 and others
 
 #include <SoftwareSerial.h>
 
-#define rx 13
+#define rx 11
 #define tx 12
 
 SoftwareSerial mySerial(rx, tx); // RX, TX
-int incbyte;
+byte data[3]; //data buffer
 
 void setup(){
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for Leonardo only
-  }
+  // wait for serial port to connect. Needed for Leonardo only
+  while (!Serial);
   // set the data rate for the SoftwareSerial port
   mySerial.begin(600);
-  //Defines the page for the register address
-  mySerial.write(0b10010000); //Select Page 16
+  delay(100); //Avoid Arduino UNO Bug
 }
 
 void loop(){
-  mySerial.write(0x31); //Read Address 49
-  while (mySerial.available() > 3){ //Wait for 3 bytes to arrive
-    char inByte = mySerial.read();
-    Serial.print(inByte,HEX);
-    inByte = mySerial.read();
-    Serial.print(inByte,HEX);
-    inByte = mySerial.read();
-    Serial.print(inByte,HEX);
-    //The result must be 9A991
-  }
-  Serial.println("");
+
+  /* The default value is: 01999A */
+  clearmySerialBuffer();
+  mySerial.write(0b10010000); //Select Page 16
+  mySerial.write(0b00110001); //Read Address 49
+	//Wait for 3 bytes to arrive
+	while(mySerial.available() < 3);
+  //Read 3 byte information
+	for(int i=0; i<3; i++){
+		data[i] = mySerial.read();
+	}
+  //Data concatenation
+  uint32_t value = 0;
+  value = value + data[2] << 8;
+  value = value + data[1] << 8;
+  value = value + data[0];
+
+  Serial.println(value,HEX);
   delay(1000);
+}
+
+/* Clearing mySerial Buffer */
+void clearmySerialBuffer(){
+  while(mySerial.available()){
+    mySerial.read();
+  }
 }

@@ -21,22 +21,24 @@
 
 
 /******* Init CS5490 *******/
-#ifdef ARDUINO_NodeMCU_32S //For Esp32
-CS5490::CS5490(float mclk){
-	this->MCLK = mclk;
-	this->cSerial = &Serial2;
-}
-#endif
 
-#ifndef ARDUINO_NodeMCU_32S //For Arduino & ESP8622
-CS5490::CS5490(float mclk, int rx, int tx){
-	this->MCLK = mclk;
-	this->cSerial = new SoftwareSerial(rx,tx);
-}
+//For Arduino & ESP8622
+#if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
+	CS5490::CS5490(float mclk, int rx, int tx){
+		this->MCLK = mclk;
+		this->cSerial = new SoftwareSerial(rx,tx);
+	}
+//For ESP32 AND MEGA
+#else
+	CS5490::CS5490(float mclk){
+		this->MCLK = mclk;
+		this->cSerial = &Serial2;
+	}
 #endif
 
 void CS5490::begin(int baudRate){
 	cSerial->begin(baudRate);
+	delay(10); //Avoid Bugs on Arduino UNO
 }
 
 /**************************************************************/
@@ -75,7 +77,7 @@ void CS5490::write(int page, int address, long value){
 
 void CS5490::read(int page, int address){
 
-	cSerial->flush();
+	this->clearSerialBuffer();
 
 	uint8_t buffer = (pageByte | (uint8_t)page);
 	cSerial->write(buffer);
@@ -92,13 +94,14 @@ void CS5490::read(int page, int address){
 /******* Give an instruction by the serial communication *******/
 
 void CS5490::instruct(int value){
-
-	cSerial->flush();
-
 	uint8_t buffer = (instructionByte | (uint8_t)value);
 	cSerial->write(buffer);
 }
 
+/******* Clears cSerial Buffer *******/
+void CS5490::clearSerialBuffer(){
+	while (cSerial->available()) cSerial->read();
+}
 
 /*
   Function: toDouble
@@ -209,6 +212,7 @@ void CS5490::setBaudRate(long value){
 	//Reset Serial communication from controller
 	cSerial->end();
 	cSerial->begin(value);
+	delay(50); //Avoid bugs from Arduino MEGA
 	return;
 }
 

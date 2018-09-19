@@ -31,9 +31,9 @@
 
 // Used .h files
 #include "Arduino.h" //Arduino Library
-//Software Serial Library
-#ifndef ARDUINO_NodeMCU_32S //For Arduino & Others
-	#ifndef  SoftwareSerial.h
+
+#if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
+	#ifndef SoftwareSerial
 		#include <SoftwareSerial.h>
 	#endif
 #endif
@@ -65,29 +65,25 @@ Ex: Select page number 3 -> 000011
 
 class CS5490{
 
-private:
-	void read(int page, int address);
-	void instruct(int instruction);
-	double toDouble(int LBSpow, int MSBoption);
-
 public:
-	float MCLK;
 
-	#ifndef ARDUINO_NodeMCU_32S //Arduino & ESP8622
+	#if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
 		SoftwareSerial *cSerial;
 		CS5490(float mclk, int rx, int tx);
-	#endif
-
-	#ifdef ARDUINO_NodeMCU_32S //ESP32
+	#else
 		HardwareSerial *cSerial;
-			CS5490(float mclk);
+		CS5490(float mclk);
 	#endif
 
-	//Some temporary public methods and atributes
-	void write(int page, int address, long value);
-	uint8_t data[3]; //data buffer for read and write
+	uint32_t data[3]; //data buffer for read and write
+	float MCLK;
 
+	void write(int page, int address, long value);
+	void read(int page, int address);
+	void instruct(int instruction);
 	void begin(int baudRate);
+	void clearSerialBuffer();
+	double toDouble(int LBSpow, int MSBoption);
 
 	/* Not implemented functions
 	void setData(double input);
