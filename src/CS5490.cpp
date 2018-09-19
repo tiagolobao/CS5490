@@ -38,6 +38,7 @@
 
 void CS5490::begin(int baudRate){
 	cSerial->begin(baudRate);
+	delay(10); //Avoid Bugs on Arduino UNO
 }
 
 /**************************************************************/
