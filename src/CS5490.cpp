@@ -343,11 +343,10 @@ double CS5490::getTime(){
 /**************************************************************/
 
 long CS5490::readReg(int page, int address){
-	long value = 0;
+	uint32_t value = 0;
 	this->read(page, address);
-	for(int i=0; i<3; i++){
-		value += data[2-i];
-		value <<= 8;
-	}
+	value = value + data[2] << 8;
+	value = value + data[1] << 8;
+	value = value + data[0];
 	return value;
 }
