@@ -6,3 +6,9 @@
 Arduino Library / ESP for Communication with the Cirrus Logic CS5490 Chip
 
 Please consider reading the [Wiki](https://github.com/tiagolobao/CS5490/wiki)
+
+<h4> Other contributors </h4>
+
+* Antônio Cezar de Castro Lima
+* André Kuhn
+* Vytautas Gabriunas
