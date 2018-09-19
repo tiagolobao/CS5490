@@ -1,7 +1,7 @@
 
 #include<CS5490.h>
 
-#define rx 13
+#define rx 11
 #define tx 12
 
 /* Choose your board */
@@ -19,6 +19,8 @@ void setup() {
   line.begin(600);
   //Initializing communication arduino/PC to show results in Monitor Serial
   Serial.begin(115200);
+  // wait for serial port to connect. Needed for Leonardo only
+  while (!Serial);
 }
 
 void loop() {
@@ -27,7 +29,7 @@ void loop() {
   double bar = line.getTime();
 
   Serial.print("The Line to Sample Frequency Ratio is: ");
-  Serial.println( foo , 10 ); //10 is the number of decimal places
+  Serial.println( foo , 5 ); //5 is the number of decimal places
 
   Serial.print("The System Time is: ");
   Serial.println( bar );
