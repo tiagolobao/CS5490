@@ -212,6 +212,7 @@ void CS5490::setBaudRate(long value){
 	//Reset Serial communication from controller
 	cSerial->end();
 	cSerial->begin(value);
+	delay(50); //Avoid bugs from Arduino MEGA
 	return;
 }
 
