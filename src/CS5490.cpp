@@ -77,7 +77,7 @@ void CS5490::write(int page, int address, long value){
 
 void CS5490::read(int page, int address){
 
-	cSerial->flush();
+	this->clearSerialBuffer();
 
 	uint8_t buffer = (pageByte | (uint8_t)page);
 	cSerial->write(buffer);
@@ -94,13 +94,14 @@ void CS5490::read(int page, int address){
 /******* Give an instruction by the serial communication *******/
 
 void CS5490::instruct(int value){
-
-	cSerial->flush();
-
 	uint8_t buffer = (instructionByte | (uint8_t)value);
 	cSerial->write(buffer);
 }
 
+/******* Clears cSerial Buffer *******/
+void CS5490::clearSerialBuffer(){
+	while (cSerial->available()) cSerial->read();
+}
 
 /*
   Function: toDouble

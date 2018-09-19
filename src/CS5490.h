@@ -82,6 +82,7 @@ public:
 	void read(int page, int address);
 	void instruct(int instruction);
 	void begin(int baudRate);
+	void clearSerialBuffer();
 	double toDouble(int LBSpow, int MSBoption);
 
 	/* Not implemented functions
