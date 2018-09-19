@@ -1,7 +1,7 @@
 
 #include<CS5490.h>
 
-#define rx 13
+#define rx 11
 #define tx 12
 
 /* Choose your board */
