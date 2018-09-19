@@ -66,11 +66,6 @@ Ex: Select page number 3 -> 000011
 class CS5490{
 
 public:
-	void read(int page, int address);
-	void instruct(int instruction);
-	double toDouble(int LBSpow, int MSBoption);
-
-	float MCLK;
 
 	#if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
 		SoftwareSerial *cSerial;
@@ -80,11 +75,14 @@ public:
 		CS5490(float mclk);
 	#endif
 
-	//Some temporary public methods and atributes
-	void write(int page, int address, long value);
-	uint8_t data[3]; //data buffer for read and write
+	uint32_t data[3]; //data buffer for read and write
+	float MCLK;
 
+	void write(int page, int address, long value);
+	void read(int page, int address);
+	void instruct(int instruction);
 	void begin(int baudRate);
+	double toDouble(int LBSpow, int MSBoption);
 
 	/* Not implemented functions
 	void setData(double input);
