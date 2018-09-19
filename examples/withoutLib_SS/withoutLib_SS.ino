@@ -21,6 +21,7 @@ void setup(){
   while (!Serial);
   // set the data rate for the SoftwareSerial port
   mySerial.begin(600);
+  delay(100); //Avoid Arduino UNO Bug
 }
 
 void loop(){
