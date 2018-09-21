@@ -1,9 +1,9 @@
 /*
-  1 - THIS EXAMPLE DOES NOT USES CS5490 LIBRARY, use only if you want to understand
-only if you are having some trouble or needs to understante how it works
+  1 - THIS EXAMPLE DOES NOT USE CS5490 LIBRARY, use only if you
+  are having some trouble or need to understand how it works
 
-  2 - THIS EXAMPLES USES SoftwareSerial library, it means that will be useful
-only for ARDUINO MEGA, ESP32 and others with multiple hardware serial components
+  2 - THIS EXAMPLE USES HardwareSerial 2 library, it means that it
+  will be useful only for ARDUINO MEGA and ESP32
 */
 
 byte data[3]; //data buffer
