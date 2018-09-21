@@ -21,6 +21,8 @@ void setup() {
   Serial.begin(115200);
   // wait for serial port to connect. Needed for Leonardo only
   while (!Serial);
+  //Set to continous conversion
+  line.contConv();
 }
 
 void loop() {

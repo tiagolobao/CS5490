@@ -25,6 +25,8 @@ void setup() {
     the CS5490!!! If you don't, it will not work properly
   */
   line.setBaudRate(115200);
+  //Set to continous conversion
+  line.contConv();
 }
 
 void loop() {
