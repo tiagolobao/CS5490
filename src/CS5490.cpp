@@ -115,6 +115,7 @@ void CS5490::clearSerialBuffer(){
     MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
     MSBunsigned (3) The MSB is a positive value, the default case.
 
+	https://repl.it/@tiagolobao/toDouble-CS5490
 */
 double CS5490::toDouble(int LSBpow, int MSBoption){
 
