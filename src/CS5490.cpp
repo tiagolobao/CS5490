@@ -140,9 +140,7 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
       MSB = data[2] & 0x80;
   		if(MSB){  //- (2 complement conversion)
   			buffer = ~buffer;
-  			//Clearing the first 8 bits
-  			for(int i=24; i<32; i++)
-  			  buffer &= ~(1 << i);
+  			buffer = buffer & 0x00FFFFFF; //Clearing the first 8 bits
   			output = (double)buffer + 1.0;
   			output /= -pow(2,LSBpow);
   		}
