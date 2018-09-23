@@ -76,6 +76,7 @@ public:
 	#endif
 
 	uint32_t data[3]; //data buffer for read and write
+	int selectedPage;
 	float MCLK;
 
 	void write(int page, int address, long value);

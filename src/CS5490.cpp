@@ -25,12 +25,14 @@
 //For Arduino & ESP8622
 #if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
 	CS5490::CS5490(float mclk, int rx, int tx){
+		this->selectedPage = -1;
 		this->MCLK = mclk;
 		this->cSerial = new SoftwareSerial(rx,tx);
 	}
 //For ESP32 AND MEGA
 #else
 	CS5490::CS5490(float mclk){
+		this->selectedPage = -1;
 		this->MCLK = mclk;
 		this->cSerial = &Serial2;
 	}
@@ -55,9 +57,13 @@ void CS5490::write(int page, int address, long value){
 	for(int i=0; i<3; i++)
 		checksum += 0xFF - checksum;
 
+	uint8_t buffer;
 	//Select page and address
-	uint8_t buffer = (pageByte | (uint8_t)page);
-	cSerial->write(buffer);
+	if(this->selectedPage != page){
+		buffer = (pageByte | (uint8_t)page);
+		cSerial->write(buffer);
+		this->selectedPage = page;
+	}
 	buffer = (writeByte | (uint8_t)address);
 	cSerial->write(buffer);
 
@@ -79,8 +85,13 @@ void CS5490::read(int page, int address){
 
 	this->clearSerialBuffer();
 
-	uint8_t buffer = (pageByte | (uint8_t)page);
-	cSerial->write(buffer);
+	uint8_t buffer;
+	//Select page and address
+	if(this->selectedPage != page){
+		buffer = (pageByte | (uint8_t)page);
+		cSerial->write(buffer);
+		this->selectedPage = page;
+	}
 	buffer = (readByte | (uint8_t)address);
 	cSerial->write(buffer);
 
