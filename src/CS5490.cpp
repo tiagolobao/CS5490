@@ -248,6 +248,12 @@ void CS5490::haltConv(){
 	this->instruct(24);
 }
 
+void CS5490::calibrate(uint8_t type, uint8_t channel){
+	uint8_t calibrationByte = 0b00100000;
+	calibrationByte &= (type&channel);
+	this->instruct(calibrationByte);
+}
+
 /**************************************************************/
 /*       PUBLIC METHODS - Configuration                       */
 /**************************************************************/

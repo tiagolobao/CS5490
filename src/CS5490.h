@@ -30,6 +30,20 @@
 #define MSBsigned 2
 #define MSBunsigned 3
 
+/* Constants for Auto Calibration */
+/*      contant           0bxxxaabbb
+     aa  = Type select
+		 bbb = Channel select
+*/
+//Type
+#define DCoffset          0b00000000
+#define ACoffset          0b00010000
+#define Gain              0b00011000
+//Channel
+#define Current           0b00000001
+#define Voltage           0b00000010
+#define CurrentAndVoltage 0b00000110
+
 /* Default values */
 #define MCLK_default 4.096
 #define baudRate_default 600
@@ -88,7 +102,7 @@ public:
 	void singConv();
 	void contConv();
 	void haltConv();
-
+	void calibrate(uint8_t type, uint8_t channel);
 	/*** Calibration ***/
 
 	//Gain
