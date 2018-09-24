@@ -86,6 +86,7 @@ public:
 	void clearSerialBuffer();
 	double toDouble(int LBSpow, int MSBoption);
 	uint32_t toBinary(int LSBpow, int MSBoption, double input);
+	uint32_t concatData();
 
 	/* Not implemented functions
 	void setData(double input);
