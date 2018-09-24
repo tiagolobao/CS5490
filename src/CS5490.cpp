@@ -150,8 +150,7 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
   			buffer = buffer & 0x00FFFFFF; //Clearing the first 8 bits
   			output = (double)buffer + 1.0;
   			output /= -pow(2,LSBpow);
-  		}
-  		else{     //+
+  		} else {  //+
   		  output = (double)buffer;
   			output /= (pow(2,LSBpow)-1.0);
   		}
@@ -196,8 +195,7 @@ uint32_t CS5490::toBinary(int LSBpow, int MSBoption, double input){
         output = (uint32_t)input;
         output = ~output;
         output = (output+1) & 0xFFFFFF; //Clearing the first 8 bits
-      }
-      else{           //+
+      } else {       //+
         input *= (pow(2,LSBpow)-1.0);
         output = (uint32_t)input;
       }
