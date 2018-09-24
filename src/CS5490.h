@@ -85,6 +85,7 @@ public:
 	void begin(int baudRate);
 	void clearSerialBuffer();
 	double toDouble(int LBSpow, int MSBoption);
+	uint32_t toBinary(int LSBpow, int MSBoption, double input);
 
 	/* Not implemented functions
 	void setData(double input);

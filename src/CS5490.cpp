@@ -172,6 +172,50 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
 	return output;
 }
 
+/*
+  Function: toBinary
+  Transforms a double number to a 24 bit number for writing registers
+
+  Param:
+  LSBpow => Expoent specified from datasheet of the less significant bit
+  MSBoption => Information of most significant bit case. It can be only three values:
+    MSBnull (1)  The MSB is a Don't Care bit
+    MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
+    MSBunsigned (3) The MSB is a positive value, the default case.
+  input => (double) value to be sent to CS5490
+*/
+uint32_t CS5490::toBinary(int LSBpow, int MSBoption, double input){
+
+	uint32_t output;
+
+  switch(MSBoption){
+    case MSBnull:
+      input *= pow(2,LSBpow);
+      output = (uint32_t)input;
+      output &= 0x7FFFFF; //Clear Don't care bits
+    break;
+    case MSBsigned:
+      if(input <= 0){ //- (2 complement conversion)
+        input *= -pow(2,LSBpow);
+        output = (uint32_t)input;
+        output = ~output;
+        output = (output+1) & 0xFFFFFF; //Clearing the first 8 bits
+      }
+      else{           //+
+        input *= (pow(2,LSBpow)-1.0);
+        output = (uint32_t)input;
+      }
+    break;
+    default:
+    case MSBunsigned:
+  		input *= pow(2,LSBpow);
+      output = (uint32_t)input;
+    break;
+  }
+
+  return output;
+}
+
 
 /**************************************************************/
 /*              PUBLIC METHODS - Instructions                 */
