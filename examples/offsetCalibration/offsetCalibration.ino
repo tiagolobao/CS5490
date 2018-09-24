@@ -24,15 +24,17 @@ void setup() {
   //Set to continous conversion
   line.contConv();
   delay(100);
+  line.setGainI(1.0);
+  delay(100);
 }
 
 void loop() {
 
   Serial.println("\nWithout calibration");
-  line.setOffsetI(0); //Reset previous calibration
+  line.setDcOffsetI(0); //Reset previous calibration
   double foo = line.getInstI();
   Serial.println(foo, 5);
-  line.setOffsetI(-foo); //Calibrate by the last read value
+  line.setDcOffsetI(-foo); //Calibrate by the last read value
 
   Serial.println("\nCalibrated");
   foo = line.getInstI();
