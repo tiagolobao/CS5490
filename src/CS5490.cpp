@@ -130,14 +130,10 @@ void CS5490::clearSerialBuffer(){
 */
 double CS5490::toDouble(int LSBpow, int MSBoption){
 
-	uint32_t buffer = 0;
 	double output = 0.0;
 	bool MSB;
 
-	//Concat bytes in a 32 bit word
-	buffer += this->data[0];
-	buffer += this->data[1] << 8;
-	buffer += this->data[2] << 16;
+	uint32_t buffer = this->concatData();
 
   switch(MSBoption){
 
@@ -218,11 +214,11 @@ uint32_t CS5490::toBinary(int LSBpow, int MSBoption, double input){
 
 /******* Concatenation of the incomming data from CS5490 *******/
 uint32_t CS5490::concatData(){
-	uint32_t buffer;
-	buffer += this->data[0];
-	buffer += this->data[1] << 8;
-	buffer += this->data[2] << 16;
-	return buffer;
+	uint32_t output;
+	output = output + data[2] << 8;
+	output = output + data[1] << 8;
+	output = output + data[0];
+	return output;
 }
 
 
@@ -287,9 +283,7 @@ int CS5490::getGainI(){
 
 long CS5490::getBaudRate(){
 	this->read(0,7);
-	uint32_t buffer = this->data[0];
-	buffer += this->data[1] << 8;
-	buffer += this->data[2] << 16;
+	uint32_t buffer = this->concatData();
 	buffer -= 0x020000;
 	return ( (buffer/0.5242880)*MCLK );
 }
@@ -405,10 +399,6 @@ double CS5490::getTime(){
 /**************************************************************/
 
 uint32_t CS5490::readReg(int page, int address){
-	uint32_t value = 0;
 	this->read(page, address);
-	value = value + data[2] << 8;
-	value = value + data[1] << 8;
-	value = value + data[0];
-	return value;
+	return this->concatData();
 }
