@@ -21,41 +21,24 @@ void setup() {
   Serial.begin(115200);
   // wait for serial port to connect. Needed for Leonardo only
   while (!Serial);
-  //Set to single conversion
-  line.singConv();
+  //Set to continous conversion
+  line.contConv();
+  delay(100);
 }
 
 void loop() {
 
-  /* P.S: if the offset is a positive value, you need to
-      write the same value at calibration register, but negative
-   */
+  Serial.println("\nWithout calibration");
+  line.setOffsetI(0); //Reset previous calibration
+  double foo = line.getInstI();
+  Serial.println(foo, 5);
+  line.setOffsetI(-foo); //Calibrate by the last read value
 
-  /* Option 1: Manual calibration
-  1 - Read instant value for 0V input
-  2 - Write the value somewere else
-  3 - Write the DC offset voltage (at void setup)
-  */
+  Serial.println("\nCalibrated");
+  foo = line.getInstI();
+  Serial.println(foo, 5);
 
-  /* Option 2: Automated Manual calibration
-  1 - Read instant value for 0V input
-  2 - Store value at Arduino EEPROM
-  3 - Read EEPROM and store DC offset voltage (at void setup)
-  */
-
-  /* Option 3: Automatic calibration
-  1 - Enable the desired calibration
-  2 - Execute calibration
-  3 - Read the results from calibration Register
-  4 - Store at Arduino EEPROM
-  5 - Read EEPROM and store DC offset voltage (at void setup)
-  */
-
-  /*
-
-  //line.write(page,address,value***)
-  line.write(16,34,0xaabbcc);
-
-  *** => value is the concatenated bytes to send
+  Serial.println("\nReset arduino to see it again... ");
+  while(1);
 
 }

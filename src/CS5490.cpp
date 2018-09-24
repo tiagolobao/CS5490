@@ -280,8 +280,8 @@ int CS5490::getGainI(){
 	return this->toDouble(22,MSBunsigned);
 }
 
-void CS5490::setOffsetI(double measuredValue){
-	uint32_t bar = this->toBinary(23,MSBsigned,-measuredValue);
+void CS5490::setOffsetI(double value){
+	uint32_t bar = this->toBinary(23,MSBsigned,value);
   this->write(16,32,bar);
 	delay(500); //Avoid bugs
 }
