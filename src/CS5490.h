@@ -93,6 +93,7 @@ public:
 
 	int getGainI();
 
+	void setOffsetI(double measuredValue);
 	/* Not implemented functions
 	void setGainSys(int value);
 	void setGainV(int value);
