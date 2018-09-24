@@ -142,8 +142,7 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
   switch(MSBoption){
 
     case MSBnull:
-      this->data[2] &= ~(1 << 7); //Clear MSB
-      buffer += this->data[2] << 16;
+			buffer &= 0x7FFFFF; //Clear MSB
       output = (double)buffer;
       output /= pow(2,LSBpow);
     break;
