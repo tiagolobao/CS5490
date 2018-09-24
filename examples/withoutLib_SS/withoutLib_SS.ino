@@ -21,7 +21,7 @@ void setup(){
   // wait for serial port to connect. Needed for Leonardo only
   while (!Serial);
   // set the data rate for the SoftwareSerial port
-  mySerial.begin(600);
+  mySerial.begin(baudRate_default);
   delay(100); //Avoid Arduino UNO Bug
 }
 

@@ -16,7 +16,7 @@ CS5490 line(MCLK_default,rx,tx);
 void setup() {
   //Initializing communication with CS5490
   //600 is the default baud rate velocity.
-  line.begin(600);
+  line.begin(baudRate_default);
   //Initializing communication arduino/PC to show results in Monitor Serial
   Serial.begin(115200);
   // wait for serial port to connect. Needed for Leonardo only

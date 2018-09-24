@@ -14,7 +14,7 @@ void setup(){
   // wait for serial port to connect. Needed for Leonardo only
   while (!Serial);
   // set the data rate for the HardwareSerial 2 port
-  Serial2.begin(600);
+  Serial2.begin(baudRate_default);
 }
 
 void loop(){
