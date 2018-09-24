@@ -89,11 +89,6 @@ public:
 	uint32_t toBinary(int LSBpow, int MSBoption, double input);
 	uint32_t concatData();
 
-	/* Not implemented functions
-	void setData(double input);
-	void setData(uint8_t input[]);
-	uint8_t* toByteArray(int LBSpow, int MSBoption);
-	---------------------- */
 
 	/*** Instructions ***/
 	void reset();
