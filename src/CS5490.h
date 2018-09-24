@@ -1,27 +1,14 @@
-/******************************************
+/**
 
-	Author: Tiago Britto Lobão
+	@author Tiago Britto Lobão
 	tiago.blobao@gmail.com
-*/
 
-
-/*
 	Purpose: Control an integrated circuit
 	Cirrus Logic - CS5490
 
 	Used to measure electrical quantities
 
 	MIT License
-
-******************************************/
-
-
-/*
-
-	Hardware important topics
-
-	VIN Max voltage: 250mV (input impedance: 2  MOhm)
-	IIN Max current: 250mV (input impedance: 30 KOhm)
 
 */
 

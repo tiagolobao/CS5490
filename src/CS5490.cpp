@@ -1,11 +1,8 @@
-/******************************************
+/**
 
-	Author: Tiago Britto Lobão
+	@author Tiago Britto Lobão
 	tiago.blobao@gmail.com
-*/
 
-
-/*
 	Purpose: Control an integrated circuit
 	Cirrus Logic - CS5490
 
@@ -13,7 +10,7 @@
 
 	MIT License
 
-******************************************/
+*/
 
 
 #include "CS5490.h"
@@ -118,15 +115,16 @@ void CS5490::clearSerialBuffer(){
   Function: toDouble
   Transforms a 24 bit number to a double number for easy processing data
 
-  Param:
+  @param
   data[] => Array with size 3. Each uint8_t is an 8 byte number received from CS5490
   LSBpow => Exponent specified from datasheet of the less significant bit
   MSBoption => Information of most significant bit case. It can be only three values:
     MSBnull (1)  The MSB is a Don't Care bit
     MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
     MSBunsigned (3) The MSB is a positive value, the default case.
+	@return value from last data received from CS55490
 
-	https://repl.it/@tiagolobao/toDouble-CS5490
+	https://repl.it/@tiagolobao/toDoubletoBinary-CS5490
 */
 double CS5490::toDouble(int LSBpow, int MSBoption){
 
@@ -171,13 +169,16 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
   Function: toBinary
   Transforms a double number to a 24 bit number for writing registers
 
-  Param:
+  @param
   LSBpow => Expoent specified from datasheet of the less significant bit
   MSBoption => Information of most significant bit case. It can be only three values:
     MSBnull (1)  The MSB is a Don't Care bit
     MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
     MSBunsigned (3) The MSB is a positive value, the default case.
   input => (double) value to be sent to CS5490
+ @return binary value equivalent do (double) input
+
+	https://repl.it/@tiagolobao/toDoubletoBinary-CS5490
 */
 uint32_t CS5490::toBinary(int LSBpow, int MSBoption, double input){
 
