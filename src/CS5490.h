@@ -79,7 +79,7 @@ public:
 	int selectedPage;
 	float MCLK;
 
-	void write(int page, int address, long value);
+	void write(int page, int address, uint32_t value);
 	void read(int page, int address);
 	void instruct(int instruction);
 	void begin(int baudRate);
@@ -153,7 +153,7 @@ public:
 	-------------------------*/
 
 	/* EXTRA METHOD */
-	long readReg(int page, int address);
+	uint32_t readReg(int page, int address);
 };
 
 #endif
