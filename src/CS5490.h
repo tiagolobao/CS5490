@@ -25,7 +25,7 @@
 	#endif
 #endif
 
-/* For toDouble method */
+/* For toDouble and toBinary method */
 #define MSBnull 1
 #define MSBsigned 2
 #define MSBunsigned 3
