@@ -248,11 +248,8 @@ void CS5490::haltConv(){
 	this->instruct(24);
 }
 
-
-
-
 /**************************************************************/
-/*       PUBLIC METHODS - Calibration and Configuration       */
+/*       PUBLIC METHODS - Configuration                       */
 /**************************************************************/
 
 /* SET */
@@ -274,23 +271,101 @@ void CS5490::setBaudRate(long value){
 }
 
 /* GET */
-int CS5490::getGainI(){
-	//Page 16, Address 33
-	this->read(16,33);
-	return this->toDouble(22,MSBunsigned);
-}
-
-void CS5490::setOffsetI(double value){
-	uint32_t bar = this->toBinary(23,MSBsigned,value);
-  this->write(16,32,bar);
-	delay(500); //Avoid bugs
-}
 
 long CS5490::getBaudRate(){
 	this->read(0,7);
 	uint32_t buffer = this->concatData();
 	buffer -= 0x020000;
 	return ( (buffer/0.5242880)*MCLK );
+}
+
+
+/**************************************************************/
+/*       PUBLIC METHODS - Calibration                         */
+/**************************************************************/
+
+/* GAIN */
+
+double CS5490::getGainSys(){
+	this->read(16,60);
+	return this->toDouble(22,MSBsigned);
+}
+
+double CS5490::getGainV(){
+	this->read(16,35);
+	return this->toDouble(22,MSBunsigned);
+}
+
+double CS5490::getGainI(){
+	this->read(16,33);
+	return this->toDouble(22,MSBunsigned);
+}
+
+double CS5490::getGainT(){
+	this->read(16,54);
+	return this->toDouble(16,MSBunsigned);
+}
+
+void CS5490::setGainSys(double value){
+	uint32_t binValue = this->toBinary(22,MSBsigned,value);
+  this->write(16,60,binValue);
+}
+
+void CS5490::setGainV(double value){
+	uint32_t binValue = this->toBinary(22,MSBunsigned,value);
+  this->write(16,35,binValue);
+}
+
+void CS5490::setGainI(double value){
+	uint32_t binValue = this->toBinary(22,MSBunsigned,value);
+  this->write(16,33,binValue);
+}
+
+void CS5490::setGainT(double value){
+	uint32_t binValue = this->toBinary(16,MSBunsigned,value);
+  this->write(16,54,binValue);
+}
+
+/* OFFSET */
+
+double CS5490::getDcOffsetV(){
+  this->read(16,34);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getDcOffsetI(){
+  this->read(16,32);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getAcOffsetI(){
+  this->read(16,37);
+	return this->toDouble(24, MSBunsigned);
+}
+
+double CS5490::getOffsetT(){
+  this->read(16,55);
+	return this->toDouble(23, MSBsigned);
+}
+
+void CS5490::setDcOffsetV(double value){
+	uint32_t binValue = this->toBinary(23,MSBsigned,value);
+  this->write(16,34,binValue);
+}
+
+void CS5490::setDcOffsetI(double value){
+	uint32_t binValue = this->toBinary(23,MSBsigned,value);
+  this->write(16,32,binValue);
+}
+
+void CS5490::setAcOffsetI(double value){
+	uint32_t binValue = this->toBinary(24,MSBunsigned,value);
+  this->write(16,37,binValue);
+}
+
+void CS5490::setOffsetT(double value){
+	uint32_t binValue = this->toBinary(23,MSBsigned,value);
+  this->write(16,55,binValue);
 }
 
 /**************************************************************/

@@ -91,20 +91,31 @@ public:
 
 	/*** Calibration ***/
 
-	int getGainI();
+	//Gain
+	double getGainSys();
+	double getGainV();
+	double getGainI();
+	double getGainT();
+	void setGainSys(double value);
+	void setGainV(double value);
+	void setGainI(double value);
+	void setGainT(double value);
 
-	void setOffsetI(double measuredValue);
-	/* Not implemented functions
-	void setGainSys(int value);
-	void setGainV(int value);
-	void setGainI(int value);
-	void setGainT(int value);
-	void setPhaseCompensation(int mode, int phase);
-	void setOffsetV(int value);
-	void setOffsetI(int value);
-	void setOffsetT(int value);
-	void setCalibrationScale(int value);
-	------------------------*/
+	//Offset
+	double getDcOffsetV();
+	double getDcOffsetI();
+	double getAcOffsetI();
+	double getOffsetT();
+	void setDcOffsetV(double value);
+	void setAcOffsetI(double value);
+	void setDcOffsetI(double value);
+	void setOffsetT(double value);
+
+	//Others
+	//double getPhaseCompensation(int mode, int phase);
+	//double getCalibrationScale(int value);
+	//void setPhaseCompensation(int mode, int phase);
+	//void setCalibrationScale(int value);
 
  	/*** Measurements ***/
 
