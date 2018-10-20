@@ -249,9 +249,12 @@ void CS5490::haltConv(){
 }
 
 void CS5490::calibrate(uint8_t type, uint8_t channel){
+	int settleTime = 2000; //Wait 2 seconds before and after
+	delay(settleTime);
 	uint8_t calibrationByte = 0b00100000;
 	calibrationByte &= (type&channel);
 	this->instruct(calibrationByte);
+	delay(settleTime);
 }
 
 /**************************************************************/
