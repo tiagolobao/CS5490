@@ -1,27 +1,14 @@
-/******************************************
+/**
 
-	Author: Tiago Britto Lobão
+	@author Tiago Britto Lobão
 	tiago.blobao@gmail.com
-*/
 
-
-/*
 	Purpose: Control an integrated circuit
 	Cirrus Logic - CS5490
 
 	Used to measure electrical quantities
 
 	MIT License
-
-******************************************/
-
-
-/*
-
-	Hardware important topics
-
-	VIN Max voltage: 250mV (input impedance: 2  MOhm)
-	IIN Max current: 250mV (input impedance: 30 KOhm)
 
 */
 
@@ -38,10 +25,24 @@
 	#endif
 #endif
 
-/* For toDouble method */
+/* For toDouble and toBinary method */
 #define MSBnull 1
 #define MSBsigned 2
 #define MSBunsigned 3
+
+/* Constants for Auto Calibration */
+/*      contant           0bxxxaabbb
+     aa  = Type select
+		 bbb = Channel select
+*/
+//Type
+#define DCoffset          0b00000000
+#define ACoffset          0b00010000
+#define Gain              0b00011000
+//Channel
+#define Current           0b00000001
+#define Voltage           0b00000010
+#define CurrentAndVoltage 0b00000110
 
 /* Default values */
 #define MCLK_default 4.096
@@ -76,20 +77,18 @@ public:
 	#endif
 
 	uint32_t data[3]; //data buffer for read and write
+	int selectedPage;
 	float MCLK;
 
-	void write(int page, int address, long value);
+	void write(int page, int address, uint32_t value);
 	void read(int page, int address);
 	void instruct(int instruction);
 	void begin(int baudRate);
 	void clearSerialBuffer();
 	double toDouble(int LBSpow, int MSBoption);
+	uint32_t toBinary(int LSBpow, int MSBoption, double input);
+	uint32_t concatData();
 
-	/* Not implemented functions
-	void setData(double input);
-	void setData(uint8_t input[]);
-	uint8_t* toByteArray(int LBSpow, int MSBoption);
-	---------------------- */
 
 	/*** Instructions ***/
 	void reset();
@@ -98,22 +97,34 @@ public:
 	void singConv();
 	void contConv();
 	void haltConv();
-
+	void calibrate(uint8_t type, uint8_t channel);
 	/*** Calibration ***/
 
-	int getGainI();
+	//Gain
+	double getGainSys();
+	double getGainV();
+	double getGainI();
+	double getGainT();
+	void setGainSys(double value);
+	void setGainV(double value);
+	void setGainI(double value);
+	void setGainT(double value);
 
-	/* Not implemented functions
-	void setGainSys(int value);
-	void setGainV(int value);
-	void setGainI(int value);
-	void setGainT(int value);
-	void setPhaseCompensation(int mode, int phase);
-	void setOffsetV(int value);
-	void setOffsetI(int value);
-	void setOffsetT(int value);
-	void setCalibrationScale(int value);
-	------------------------*/
+	//Offset
+	double getDcOffsetV();
+	double getDcOffsetI();
+	double getAcOffsetI();
+	double getOffsetT();
+	void setDcOffsetV(double value);
+	void setAcOffsetI(double value);
+	void setDcOffsetI(double value);
+	void setOffsetT(double value);
+
+	//Others
+	//double getPhaseCompensation(int mode, int phase);
+	//double getCalibrationScale(int value);
+	//void setPhaseCompensation(int mode, int phase);
+	//void setCalibrationScale(int value);
 
  	/*** Measurements ***/
 
@@ -150,7 +161,7 @@ public:
 	-------------------------*/
 
 	/* EXTRA METHOD */
-	long readReg(int page, int address);
+	uint32_t readReg(int page, int address);
 };
 
 #endif

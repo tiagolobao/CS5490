@@ -1,3 +1,8 @@
+/*
+  !!! This example is too simple. It is better to make multiple
+  readings and calculate a more precise valie for offset calibration
+*/
+
 
 #include<CS5490.h>
 
@@ -23,19 +28,24 @@ void setup() {
   while (!Serial);
   //Set to continous conversion
   line.contConv();
+  delay(100);
+  line.setGainI(1.0);
+  delay(100);
 }
 
 void loop() {
 
-  double foo = line.getFreq();
-  double bar = line.getTime();
+  Serial.println("\nWithout calibration");
+  line.setDcOffsetI(0); //Reset previous calibration
+  double foo = line.getInstI();
+  Serial.println(foo, 5);
+  line.setDcOffsetI(-foo); //Calibrate by the last read value
 
-  Serial.print("The Line to Sample Frequency Ratio is: ");
-  Serial.println( foo , 5 ); //5 is the number of decimal places
+  Serial.println("\nCalibrated");
+  foo = line.getInstI();
+  Serial.println(foo, 5);
 
-  Serial.print("The System Time is: ");
-  Serial.println( bar );
+  Serial.println("\nReset arduino to see it again... ");
+  while(1);
 
-  Serial.println("");
-  delay(1000);
 }

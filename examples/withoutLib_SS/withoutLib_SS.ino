@@ -1,9 +1,10 @@
-/*
-  1 - THIS EXAMPLE DOES NOT USES CS5490 LIBRARY, use only if you want to understand
-only if you are having some trouble or needs to understante how it works
 
-  2 - THIS EXAMPLES USES SoftwareSerial library, it means that will be useful
-only for ARDUINO UNO, ESP8622 and others
+/*
+  1 - THIS EXAMPLE DOES NOT USE CS5490 LIBRARY, use only if you
+  are having some trouble or need to understand how it works
+
+  2 - THIS EXAMPLE USES SoftwareSerial library, it means that it
+  will be useful only for ARDUINO UNO, ESP8622 and others
 */
 
 #include <SoftwareSerial.h>
@@ -20,7 +21,7 @@ void setup(){
   // wait for serial port to connect. Needed for Leonardo only
   while (!Serial);
   // set the data rate for the SoftwareSerial port
-  mySerial.begin(600);
+  mySerial.begin(baudRate_default);
   delay(100); //Avoid Arduino UNO Bug
 }
 

@@ -1,9 +1,9 @@
 /*
-  1 - THIS EXAMPLE DOES NOT USES CS5490 LIBRARY, use only if you want to understand
-only if you are having some trouble or needs to understante how it works
+  1 - THIS EXAMPLE DOES NOT USE CS5490 LIBRARY, use only if you
+  are having some trouble or need to understand how it works
 
-  2 - THIS EXAMPLES USES SoftwareSerial library, it means that will be useful
-only for ARDUINO MEGA, ESP32 and others with multiple hardware serial components
+  2 - THIS EXAMPLE USES HardwareSerial 2 library, it means that it
+  will be useful only for ARDUINO MEGA and ESP32
 */
 
 byte data[3]; //data buffer
@@ -14,7 +14,7 @@ void setup(){
   // wait for serial port to connect. Needed for Leonardo only
   while (!Serial);
   // set the data rate for the HardwareSerial 2 port
-  Serial2.begin(600);
+  Serial2.begin(baudRate_default);
 }
 
 void loop(){

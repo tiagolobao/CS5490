@@ -8,3 +8,11 @@ baudRate_default	LITERAL1
 MSBnull	LITERAL1
 MSBsigned	LITERAL1
 MSBunsigned	LITERAL1
+
+DCoffset	LITERAL1
+ACoffset	LITERAL1
+Gain	LITERAL1
+
+Current	LITERAL1
+Voltage	LITERAL1
+CurrentAndVoltage	LITERAL1

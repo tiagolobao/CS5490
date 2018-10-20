@@ -1,11 +1,8 @@
-/******************************************
+/**
 
-	Author: Tiago Britto Lobão
+	@author Tiago Britto Lobão
 	tiago.blobao@gmail.com
-*/
 
-
-/*
 	Purpose: Control an integrated circuit
 	Cirrus Logic - CS5490
 
@@ -13,7 +10,7 @@
 
 	MIT License
 
-******************************************/
+*/
 
 
 #include "CS5490.h"
@@ -25,12 +22,14 @@
 //For Arduino & ESP8622
 #if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
 	CS5490::CS5490(float mclk, int rx, int tx){
+		this->selectedPage = -1;
 		this->MCLK = mclk;
 		this->cSerial = new SoftwareSerial(rx,tx);
 	}
 //For ESP32 AND MEGA
 #else
 	CS5490::CS5490(float mclk){
+		this->selectedPage = -1;
 		this->MCLK = mclk;
 		this->cSerial = &Serial2;
 	}
@@ -42,22 +41,26 @@ void CS5490::begin(int baudRate){
 }
 
 /**************************************************************/
-/*                     PRIVATE METHODS                        */
+/*                 METHODS FOR BASIC OPERATIONS               */
 /**************************************************************/
 
 
 /******* Write a register by the serial communication *******/
 /* data bytes pass by data variable from this class */
 
-void CS5490::write(int page, int address, long value){
+void CS5490::write(int page, int address, uint32_t value){
 
 	uint8_t checksum = 0;
 	for(int i=0; i<3; i++)
 		checksum += 0xFF - checksum;
 
+	uint8_t buffer;
 	//Select page and address
-	uint8_t buffer = (pageByte | (uint8_t)page);
-	cSerial->write(buffer);
+	if(this->selectedPage != page){
+		buffer = (pageByte | (uint8_t)page);
+		cSerial->write(buffer);
+		this->selectedPage = page;
+	}
 	buffer = (writeByte | (uint8_t)address);
 	cSerial->write(buffer);
 
@@ -79,8 +82,13 @@ void CS5490::read(int page, int address){
 
 	this->clearSerialBuffer();
 
-	uint8_t buffer = (pageByte | (uint8_t)page);
-	cSerial->write(buffer);
+	uint8_t buffer;
+	//Select page and address
+	if(this->selectedPage != page){
+		buffer = (pageByte | (uint8_t)page);
+		cSerial->write(buffer);
+		this->selectedPage = page;
+	}
 	buffer = (readByte | (uint8_t)address);
 	cSerial->write(buffer);
 
@@ -107,31 +115,28 @@ void CS5490::clearSerialBuffer(){
   Function: toDouble
   Transforms a 24 bit number to a double number for easy processing data
 
-  Param:
+  @param
   data[] => Array with size 3. Each uint8_t is an 8 byte number received from CS5490
   LSBpow => Exponent specified from datasheet of the less significant bit
   MSBoption => Information of most significant bit case. It can be only three values:
     MSBnull (1)  The MSB is a Don't Care bit
     MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
     MSBunsigned (3) The MSB is a positive value, the default case.
+	@return value from last data received from CS55490
 
+	https://repl.it/@tiagolobao/toDoubletoBinary-CS5490
 */
 double CS5490::toDouble(int LSBpow, int MSBoption){
 
-	uint32_t buffer = 0;
 	double output = 0.0;
 	bool MSB;
 
-	//Concat bytes in a 32 bit word
-	buffer += this->data[0];
-	buffer += this->data[1] << 8;
-	buffer += this->data[2] << 16;
+	uint32_t buffer = this->concatData();
 
   switch(MSBoption){
 
     case MSBnull:
-      this->data[2] &= ~(1 << 7); //Clear MSB
-      buffer += this->data[2] << 16;
+			buffer &= 0x7FFFFF; //Clear MSB
       output = (double)buffer;
       output /= pow(2,LSBpow);
     break;
@@ -140,13 +145,10 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
       MSB = data[2] & 0x80;
   		if(MSB){  //- (2 complement conversion)
   			buffer = ~buffer;
-  			//Clearing the first 8 bits
-  			for(int i=24; i<32; i++)
-  			  buffer &= ~(1 << i);
+  			buffer = buffer & 0x00FFFFFF; //Clearing the first 8 bits
   			output = (double)buffer + 1.0;
   			output /= -pow(2,LSBpow);
-  		}
-  		else{     //+
+  		} else {  //+
   		  output = (double)buffer;
   			output /= (pow(2,LSBpow)-1.0);
   		}
@@ -160,6 +162,61 @@ double CS5490::toDouble(int LSBpow, int MSBoption){
 
   }
 
+	return output;
+}
+
+/*
+  Function: toBinary
+  Transforms a double number to a 24 bit number for writing registers
+
+  @param
+  LSBpow => Expoent specified from datasheet of the less significant bit
+  MSBoption => Information of most significant bit case. It can be only three values:
+    MSBnull (1)  The MSB is a Don't Care bit
+    MSBsigned (2) the MSB is a negative value, requiring a 2 complement conversion
+    MSBunsigned (3) The MSB is a positive value, the default case.
+  input => (double) value to be sent to CS5490
+ @return binary value equivalent do (double) input
+
+	https://repl.it/@tiagolobao/toDoubletoBinary-CS5490
+*/
+uint32_t CS5490::toBinary(int LSBpow, int MSBoption, double input){
+
+	uint32_t output;
+
+  switch(MSBoption){
+    case MSBnull:
+      input *= pow(2,LSBpow);
+      output = (uint32_t)input;
+      output &= 0x7FFFFF; //Clear Don't care bits
+    break;
+    case MSBsigned:
+      if(input <= 0){ //- (2 complement conversion)
+        input *= -pow(2,LSBpow);
+        output = (uint32_t)input;
+        output = ~output;
+        output = (output+1) & 0xFFFFFF; //Clearing the first 8 bits
+      } else {       //+
+        input *= (pow(2,LSBpow)-1.0);
+        output = (uint32_t)input;
+      }
+    break;
+    default:
+    case MSBunsigned:
+  		input *= pow(2,LSBpow);
+      output = (uint32_t)input;
+    break;
+  }
+
+  return output;
+}
+
+/******* Concatenation of the incomming data from CS5490 *******/
+uint32_t CS5490::concatData(){
+	uint32_t output;
+	output = output + data[2] << 8;
+	output = output + data[1] << 8;
+	output = output + data[0];
 	return output;
 }
 
@@ -191,11 +248,17 @@ void CS5490::haltConv(){
 	this->instruct(24);
 }
 
-
-
+void CS5490::calibrate(uint8_t type, uint8_t channel){
+	int settleTime = 2000; //Wait 2 seconds before and after
+	delay(settleTime);
+	uint8_t calibrationByte = 0b00100000;
+	calibrationByte &= (type&channel);
+	this->instruct(calibrationByte);
+	delay(settleTime);
+}
 
 /**************************************************************/
-/*       PUBLIC METHODS - Calibration and Configuration       */
+/*       PUBLIC METHODS - Configuration                       */
 /**************************************************************/
 
 /* SET */
@@ -217,19 +280,101 @@ void CS5490::setBaudRate(long value){
 }
 
 /* GET */
-int CS5490::getGainI(){
-	//Page 16, Address 33
+
+long CS5490::getBaudRate(){
+	this->read(0,7);
+	uint32_t buffer = this->concatData();
+	buffer -= 0x020000;
+	return ( (buffer/0.5242880)*MCLK );
+}
+
+
+/**************************************************************/
+/*       PUBLIC METHODS - Calibration                         */
+/**************************************************************/
+
+/* GAIN */
+
+double CS5490::getGainSys(){
+	this->read(16,60);
+	return this->toDouble(22,MSBsigned);
+}
+
+double CS5490::getGainV(){
+	this->read(16,35);
+	return this->toDouble(22,MSBunsigned);
+}
+
+double CS5490::getGainI(){
 	this->read(16,33);
 	return this->toDouble(22,MSBunsigned);
 }
 
-long CS5490::getBaudRate(){
-	this->read(0,7);
-	uint32_t buffer = this->data[0];
-	buffer += this->data[1] << 8;
-	buffer += this->data[2] << 16;
-	buffer -= 0x020000;
-	return ( (buffer/0.5242880)*MCLK );
+double CS5490::getGainT(){
+	this->read(16,54);
+	return this->toDouble(16,MSBunsigned);
+}
+
+void CS5490::setGainSys(double value){
+	uint32_t binValue = this->toBinary(22,MSBsigned,value);
+  this->write(16,60,binValue);
+}
+
+void CS5490::setGainV(double value){
+	uint32_t binValue = this->toBinary(22,MSBunsigned,value);
+  this->write(16,35,binValue);
+}
+
+void CS5490::setGainI(double value){
+	uint32_t binValue = this->toBinary(22,MSBunsigned,value);
+  this->write(16,33,binValue);
+}
+
+void CS5490::setGainT(double value){
+	uint32_t binValue = this->toBinary(16,MSBunsigned,value);
+  this->write(16,54,binValue);
+}
+
+/* OFFSET */
+
+double CS5490::getDcOffsetV(){
+  this->read(16,34);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getDcOffsetI(){
+  this->read(16,32);
+	return this->toDouble(23, MSBsigned);
+}
+
+double CS5490::getAcOffsetI(){
+  this->read(16,37);
+	return this->toDouble(24, MSBunsigned);
+}
+
+double CS5490::getOffsetT(){
+  this->read(16,55);
+	return this->toDouble(23, MSBsigned);
+}
+
+void CS5490::setDcOffsetV(double value){
+	uint32_t binValue = this->toBinary(23,MSBsigned,value);
+  this->write(16,34,binValue);
+}
+
+void CS5490::setDcOffsetI(double value){
+	uint32_t binValue = this->toBinary(23,MSBsigned,value);
+  this->write(16,32,binValue);
+}
+
+void CS5490::setAcOffsetI(double value){
+	uint32_t binValue = this->toBinary(24,MSBunsigned,value);
+  this->write(16,37,binValue);
+}
+
+void CS5490::setOffsetT(double value){
+	uint32_t binValue = this->toBinary(23,MSBsigned,value);
+  this->write(16,55,binValue);
 }
 
 /**************************************************************/
@@ -342,11 +487,7 @@ double CS5490::getTime(){
 /*              PUBLIC METHODS - Read Register                */
 /**************************************************************/
 
-long CS5490::readReg(int page, int address){
-	uint32_t value = 0;
+uint32_t CS5490::readReg(int page, int address){
 	this->read(page, address);
-	value = value + data[2] << 8;
-	value = value + data[1] << 8;
-	value = value + data[0];
-	return value;
+	return this->concatData();
 }
