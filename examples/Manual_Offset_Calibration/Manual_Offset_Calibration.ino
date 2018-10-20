@@ -1,3 +1,8 @@
+/*
+  !!! This example is too simple. It is better to make multiple
+  readings and calculate a more precise valie for offset calibration
+*/
+
 
 #include<CS5490.h>
 
