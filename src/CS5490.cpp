@@ -50,10 +50,6 @@ void CS5490::begin(int baudRate){
 
 void CS5490::write(int page, int address, uint32_t value){
 
-	uint8_t checksum = 0;
-	for(int i=0; i<3; i++)
-		checksum += 0xFF - checksum;
-
 	uint8_t buffer;
 	//Select page and address
 	if(this->selectedPage != page){
@@ -70,9 +66,6 @@ void CS5490::write(int page, int address, uint32_t value){
 		cSerial->write(this->data[i]);
 		value >>= 8;
 	}
-	//Calculate and send checksum
-	buffer = 0xFF - data[0] - data[1] - data[2];
-	cSerial->write(buffer);
 }
 
 /******* Read a register by the serial communication *******/
