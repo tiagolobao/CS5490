@@ -10,6 +10,7 @@
 
 	MIT License
 
+	Modified by Maurizio Malaspina maurizio.malaspina@gmail.com 
 */
 
 
@@ -62,23 +63,47 @@ Ex: Select page number 3 -> 000011
 
 */
 
+typedef enum AfeGainI_e
+{
+	I_GAIN_10x = 0x00,
+	I_GAIN_50x = 0x01
 
+} AfeGainI_t;
+
+typedef enum DO_Function_e
+{
+	DO_EPG    = 0,
+	DO_P_SIGN = 4,
+	DO_P_SUM_SIGN = 6,
+	DO_Q_SIGN = 7,
+	DO_Q_SUM_SIGN = 9,
+	DO_V_ZERO_CROSSING = 11,
+	DO_I_ZERO_CROSSING = 12,
+	DO_HI_Z_DEFAULT = 14
+}
+DO_Function_t;
 
 class CS5490{
+
+private:
+	bool _readOperationResult;
 
 public:
 
 	#if !(defined ARDUINO_NodeMCU_32S ) && !defined(__AVR_ATmega1280__) && !defined(__AVR_ATmega2560__) && !defined(ARDUINO_Node32s)
 		SoftwareSerial *cSerial;
 		CS5490(float mclk, int rx, int tx);
+		CS5490(float mclk, int rx, int tx, int reset);
 	#else
 		HardwareSerial *cSerial;
 		CS5490(float mclk);
+		CS5490(float mclk, int reset);
 	#endif
 
 	uint32_t data[3]; //data buffer for read and write
 	int selectedPage;
 	float MCLK;
+	int resetPin;
 
 	void write(int page, int address, uint32_t value);
 	void read(int page, int address);
@@ -88,6 +113,8 @@ public:
 	double toDouble(int LBSpow, int MSBoption);
 	uint32_t toBinary(int LSBpow, int MSBoption, double input);
 	uint32_t concatData();
+	bool isLastReadingOperationSucceeded(void);
+	uint32_t getRegChk(void);
 
 
 	/*** Instructions ***/
@@ -98,6 +125,9 @@ public:
 	void contConv();
 	void haltConv();
 	void calibrate(uint8_t type, uint8_t channel);
+	void sendCalibrationCommand(uint8_t type, uint8_t channel);
+	void hardwareReset(void);
+	bool checkInternalVoltageReference(void);
 	/*** Calibration ***/
 
 	//Gain
@@ -109,6 +139,7 @@ public:
 	void setGainV(double value);
 	void setGainI(double value);
 	void setGainT(double value);
+	void setAfeGainI(AfeGainI_t AfeCurrentGain);
 
 	//Offset
 	double getDcOffsetV();
@@ -156,6 +187,7 @@ public:
 	/*** Configuration ***/
 	long getBaudRate();
 	void setBaudRate(long value);
+	void setDOpinFunction(DO_Function_t DO_fnct, bool openDrain);
 	/* Not implemented functions
 	void setDO(int mode);
 	-------------------------*/

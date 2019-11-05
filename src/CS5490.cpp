@@ -10,6 +10,7 @@
 
 	MIT License
 
+	Modified by Maurizio Malaspina maurizio.malaspina@gmail.com 
 */
 
 
@@ -25,6 +26,15 @@
 		this->selectedPage = -1;
 		this->MCLK = mclk;
 		this->cSerial = new SoftwareSerial(rx,tx);
+		this->resetPin = -1;
+	}
+
+	CS5490::CS5490(float mclk, int rx, int tx, int reset){
+		this->selectedPage = -1;
+		this->MCLK = mclk;
+		this->cSerial = new SoftwareSerial(rx,tx);
+		this->resetPin = reset;
+		pinMode(this->resetPin, INPUT); // In the hypothesis there's an RC circuit connected to the CS5490 reset pin
 	}
 //For ESP32 AND MEGA
 #else
@@ -32,11 +42,21 @@
 		this->selectedPage = -1;
 		this->MCLK = mclk;
 		this->cSerial = &Serial2;
+		this->resetPin = -1;
+	}
+
+		CS5490::CS5490(float mclk, int reset){
+		this->selectedPage = -1;
+		this->MCLK = mclk;
+		this->cSerial = &Serial2;
+		this->resetPin = reset;
+		pinMode(this->resetPin, INPUT); // In the hypothesis there's an RC circuit connected to the CS5490 reset pin
 	}
 #endif
 
 void CS5490::begin(int baudRate){
 	cSerial->begin(baudRate);
+	this->_readOperationResult = false;
 	delay(10); //Avoid Bugs on Arduino UNO
 }
 
@@ -73,6 +93,8 @@ void CS5490::write(int page, int address, uint32_t value){
 
 void CS5490::read(int page, int address){
 
+	unsigned long startMillis;
+	
 	this->clearSerialBuffer();
 
 	uint8_t buffer;
@@ -85,11 +107,32 @@ void CS5490::read(int page, int address){
 	buffer = (readByte | (uint8_t)address);
 	cSerial->write(buffer);
 
+	startMillis = millis();
 	//Wait for 3 bytes to arrive
-	while(cSerial->available() < 3);
-	for(int i=0; i<3; i++){
-		data[i] = cSerial->read();
+	while( (cSerial->available() < 3) && ( (millis()-startMillis) < 500));
+	if(cSerial->available() >= 3)
+	{
+		for(int i=0; i<3; i++){
+			data[i] = cSerial->read();
+		}
+		this->_readOperationResult = true;
 	}
+	else
+	{
+		this->_readOperationResult = false;
+	}
+
+	this->clearSerialBuffer();
+}
+
+bool CS5490::isLastReadingOperationSucceeded(void)
+{
+	return this->_readOperationResult;
+}
+
+uint32_t CS5490::getRegChk(void)
+{
+	return this->readReg(16,1);
 }
 
 /******* Give an instruction by the serial communication *******/
@@ -217,6 +260,39 @@ uint32_t CS5490::concatData(){
 /**************************************************************/
 /*              PUBLIC METHODS - Instructions                 */
 /**************************************************************/
+void CS5490::hardwareReset(void)
+{
+	unsigned long startTime;
+	
+	if(this->resetPin != -1) // Check if the reset pin is properly managed (see constructor overload)
+	{
+		// Manage LOW --> HIGH reset pin state
+		startTime = millis();
+		digitalWrite(this->resetPin, LOW);
+		pinMode(this->resetPin, OUTPUT);   
+		while(millis() < startTime + 100);
+		digitalWrite(this->resetPin, HIGH);
+		startTime = millis();
+		while(millis() < startTime + 100);
+	}
+
+  	// SW reset (in case the reset line fails...)
+  	this->reset();
+
+	// Errata: CS5490 Rev B2 Silicon (Mar'13) - Erratum 2 "On chip reference reset state".
+	// The following sequence do not affect the critical registers CRC value (default: 0xDD8BD6)
+	this->write(0,28,0x000016);
+	this->write(0,30,0x0C0008);
+	this->write(0,28,0x000000);
+
+}
+
+// Errata: CS5490 Rev B2 Silicon (Mar'13) - Erratum 2 "On chip reference reset state".
+bool CS5490::checkInternalVoltageReference(void)
+{
+	return (this->readReg(0, 30) == 0x0C0008 ? true : false);
+} 
+
 void CS5490::reset(){
 	this->instruct(1);
 }
@@ -245,9 +321,16 @@ void CS5490::calibrate(uint8_t type, uint8_t channel){
 	int settleTime = 2000; //Wait 2 seconds before and after
 	delay(settleTime);
 	uint8_t calibrationByte = 0b00100000;
-	calibrationByte &= (type&channel);
+	calibrationByte |= (type|channel);
 	this->instruct(calibrationByte);
 	delay(settleTime);
+}
+
+void CS5490::sendCalibrationCommand(uint8_t type, uint8_t channel){
+	// The full sequence, according to "AN366REV2" is properly implemented in the "CS5490_AC_Current_Gain_Tuning_demo.ino" example
+	uint8_t calibrationByte = 0b00100000;
+	calibrationByte |= (type|channel);
+	this->instruct(calibrationByte);
 }
 
 /**************************************************************/
@@ -262,7 +345,7 @@ void CS5490::setBaudRate(long value){
 	if (hexBR > 65535) hexBR = 65535;
 	hexBR += 0x020000;
 
-	this->write(0x80,0x07,hexBR);
+	this->write(0x80,0x07,hexBR);          // 0x80 instead of 0x00 in order to force a page selection command on page 0
 	delay(100); //To avoid bugs from ESP32
 
 	//Reset Serial communication from controller
@@ -270,6 +353,28 @@ void CS5490::setBaudRate(long value){
 	cSerial->begin(value);
 	delay(50); //Avoid bugs from Arduino MEGA
 	return;
+}
+
+void CS5490::setDOpinFunction(DO_Function_t DO_fnct, bool openDrain)
+{
+	uint32_t reg;
+
+	reg = this->readReg(0,1); // Config 1 register
+	reg &= (~0x0000000F); 
+
+	if(openDrain)
+		reg |= 0x00010000;
+
+	if(DO_fnct == DO_EPG)
+	{
+		reg |= 0x00100000; // Enable EPG block
+	}
+
+	if(DO_fnct == DO_EPG || DO_fnct == DO_P_SIGN || DO_fnct == DO_P_SUM_SIGN || DO_fnct == DO_Q_SIGN || DO_fnct == DO_Q_SUM_SIGN || DO_fnct == DO_V_ZERO_CROSSING || DO_fnct == DO_I_ZERO_CROSSING || DO_fnct == DO_HI_Z_DEFAULT)
+	{
+		reg |= (uint32_t)DO_fnct;
+		this->write(0,1,reg);	
+	}
 }
 
 /* GET */
@@ -280,7 +385,6 @@ long CS5490::getBaudRate(){
 	buffer -= 0x020000;
 	return ( (buffer/0.5242880)*MCLK );
 }
-
 
 /**************************************************************/
 /*       PUBLIC METHODS - Calibration                         */
@@ -326,6 +430,22 @@ void CS5490::setGainI(double value){
 void CS5490::setGainT(double value){
 	uint32_t binValue = this->toBinary(16,MSBunsigned,value);
   this->write(16,54,binValue);
+}
+
+void CS5490::setAfeGainI(AfeGainI_t AfeCurrentGain)
+{
+	uint32_t reg;
+	
+	if(AfeCurrentGain > I_GAIN_50x)
+		return;
+
+	reg = this->readReg(0,0); // Config 0 register
+	reg &= (~0x00000030); 
+
+	if(AfeCurrentGain == I_GAIN_50x)
+		reg |= 0x00000020;
+
+	this->write(0,0,reg);	
 }
 
 /* OFFSET */
