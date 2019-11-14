@@ -14,7 +14,7 @@ CS5490 line(MCLK_default,rx,tx,Reset);
 //CS5490 line(MCLK_default,Reset);
 
 // Comment out the following in order to activate tuning mode for AC Igain (shunt method is used in this example)
-#define TUNING_MODE_ACTIVE
+//#define TUNING_MODE_ACTIVE
 
 // The following parameters are application dependent, therefore must be properly set according your external hardware
 #define R_SHUNT_OHM   0.069  // Application dependent
@@ -31,7 +31,6 @@ CS5490 line(MCLK_default,rx,tx,Reset);
 #define P_COEFF_CALIBRATED       ((V_MAX_RMS * I_MAX_RMS_A) / (P_FS * SYS_GAIN)) // Once current gain calibrated the contribute of SYS_GAIN disappears during normal operation
 #define SAMPLE_COUNT_DEFAULT  4000 // Number of sample used to compute the output low rate computation (with quartz 4.096MHz --> 1 measure/s).
 
-bool registerReadingOperationIsOK;
 bool calibrated;
 bool resetRequired;
 uint32_t CriticalRegisterChecksum;
@@ -48,7 +47,7 @@ bool CS5490_testReset(void)
   line.singConv();
 
 	uint32_t regChk = line.getRegChk();
-  if (!line.isLastReadingOperationSucceeded()) return false;
+  if (!line.areLastReadingOperationsSucceeded()) return false;
 
   if(regChk != 0x00DD8BD6) return false;
 
@@ -87,7 +86,7 @@ void CS5490_SendConfiguration(void)
     // Send calibration data
     line.write(16,33,IgainCalibrated);
     uint32_t IgainCalibratedReadBack = line.readReg(16, 33);
-    if (line.isLastReadingOperationSucceeded() && IgainCalibratedReadBack == IgainCalibrated)
+    if (line.areLastReadingOperationsSucceeded() && IgainCalibratedReadBack == IgainCalibrated)
     {
       Serial.println("Igain written and verified");
       calibrated = true; 
@@ -102,8 +101,6 @@ void CS5490_SendConfiguration(void)
     Serial.println("CALIBRATION DATA NOT FOUND: apply default CriticalRegisterChecksum: 0xDD8BD6");
     CriticalRegisterChecksum = 0xDD8BD6;
   }
-  
-
   
   // Activate HPF on I current (Don't alterate critical registers checksum)
   uint32_t reg = line.readReg(16,0);
@@ -146,7 +143,7 @@ void loop() {
   // Implementation based on "CIRRUS LOGIC AN366REV2" pag. 15 "Main Calibration Flow" https://statics.cirrus.com/pubs/appNote/AN366REV2.pdf
   // Calibration should be performed with PF=1 --> pure resistive load
   
-  #define I_CAL_RMS_A  1.288 // Moreless 1/2 max load
+  #define I_CAL_RMS_A  1.3126 // Moreless 1/2 max load
   #define SCALE_REGISTER_FRACTION  (0.6 * (I_CAL_RMS_A / I_MAX_RMS_A)) // For not full load calibration
   #define SCALE_REGISTER_VALUE ((uint32_t)(SCALE_REGISTER_FRACTION * 0x800000)) 
 
@@ -154,7 +151,7 @@ void loop() {
   while(!CS5490_testReset())
   {
     Serial.println( "RESET issue... retry" );
-    line.hardwareReset();
+    line.resolve();
   }
 
   Serial.println( "RESET OK! Default parameters applied." );
@@ -169,24 +166,15 @@ void loop() {
 
   line.haltConv();
 
-  registerReadingOperationIsOK = true;
- 
   double rmsV = line.getRmsV();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double freq = line.getFreq();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double rmsI = line.getRmsI();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double PF = line.getPF();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double P = line.getAvgP();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double Q = line.getAvgQ();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double S = line.getAvgS();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
    
-  if(registerReadingOperationIsOK)
+  if(line.areLastReadingOperationsSucceeded())
   {
         Serial.print("Vac RMS: ");
         rmsV = (((rmsV/SYS_GAIN)/V_FS)*V_FS_RMS_V)/V_ALFA;
@@ -216,23 +204,23 @@ void loop() {
         Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Serial.println();
 
-        registerReadingOperationIsOK = true;
+        bool tuningSubSequenceIsOK = true;
 
         line.write(16, 57, 0x1F40); // Set Tsettle to 2000ms
         uint32_t reg = line.readReg(16, 57);
-        if (!line.isLastReadingOperationSucceeded() || reg != 0x1F40) registerReadingOperationIsOK = false;
+        if (!line.areLastReadingOperationsSucceeded() || reg != 0x1F40) tuningSubSequenceIsOK = false;
 
         line.write(16, 51, 0x3E80); // Set sample count register to 16000
         reg = line.readReg(16, 51);
-        if (!line.isLastReadingOperationSucceeded() || reg != 0x3E80) registerReadingOperationIsOK = false;
+        if (!line.areLastReadingOperationsSucceeded() || reg != 0x3E80) tuningSubSequenceIsOK = false;
 
         reg = line.readReg(0, 23); // Status0 register (in order to manage the DRDY bit)
-        if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
+        if (!line.areLastReadingOperationsSucceeded()) tuningSubSequenceIsOK = false;
         line.write(0, 23, reg | 0x00800000); // Clear DRDY by setting it
         uint32_t status0_reg_verify = line.readReg(0, 23);
-        if (!line.isLastReadingOperationSucceeded() || reg & 0x7FFFFF != status0_reg_verify) registerReadingOperationIsOK = false;
+        if (!line.areLastReadingOperationsSucceeded() || reg & 0x7FFFFF != status0_reg_verify) tuningSubSequenceIsOK = false;
 
-        if(registerReadingOperationIsOK)
+        if(tuningSubSequenceIsOK)
         {
           line.sendCalibrationCommand(Gain, Current);  // Start current gain calibration
           
@@ -242,7 +230,7 @@ void loop() {
           do
           {
             reg = line.readReg(0, 23); // Status0 register (in order to manage the DRDY bit)
-            if(line.isLastReadingOperationSucceeded() && reg & 0x800000)
+            if(line.areLastReadingOperationsSucceeded() && reg & 0x800000)
               DRDY = true; 
             else 
               DRDY = false;
@@ -255,28 +243,18 @@ void loop() {
 
             delay(2000);
 
-            registerReadingOperationIsOK = true;
- 
             double rmsV = line.getRmsV();
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
             double freq = line.getFreq();
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
             double rmsI = line.getRmsI();
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
             double PF = line.getPF();
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
             uint32_t Igain = line.readReg(16, 33);
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   
-  /*        // Power read always 0 in this calibration phase (experimental result)
-            double P = line.getAvgP();
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
-            double Q = line.getAvgQ();
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
-            double S = line.getAvgS();
-            if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
-  */            
-            if(registerReadingOperationIsOK)
+            // Power read always 0 in this calibration phase (experimental result)
+            // double P = line.getAvgP();
+            // double Q = line.getAvgQ();
+            // double S = line.getAvgS();
+              
+            if(line.areLastReadingOperationsSucceeded())
             {
                   Serial.print("Vac RMS: ");
                   rmsV = (((rmsV/SYS_GAIN)/V_FS)*V_FS_RMS_V)/V_ALFA;
@@ -291,17 +269,17 @@ void loop() {
                   Serial.print("PF: ");
                   Serial.println( PF, 4 );
   
-  /*              // Power read always 0 in this calibration phase (experimental result)
-                  Serial.print("Active power: ");
-                  Serial.print( P * P_COEFF , 4 ); 
-                  Serial.println(" W");
-                  Serial.print("Reactive power: ");
-                  Serial.print( Q * P_COEFF, 4 );
-                  Serial.println(" VAR");
-                  Serial.print("Apparent power: ");
-                  Serial.print( S * P_COEFF, 4 );
-                  Serial.println(" VA");
-  */                
+                  // Power read always 0 in this calibration phase (experimental result)
+                  // Serial.print("Active power: ");
+                  // Serial.print( P * P_COEFF , 4 ); 
+                  // Serial.println(" W");
+                  // Serial.print("Reactive power: ");
+                  // Serial.print( Q * P_COEFF, 4 );
+                  // Serial.println(" VAR");
+                  // Serial.print("Apparent power: ");
+                  // Serial.print( S * P_COEFF, 4 );
+                  // Serial.println(" VA");
+                  
                   // Verify that reset is ok: HW RESET --> START SINGLE CONVERSION --> CHECK RESET CHECKSUM
                   while(!CS5490_testReset())
                   {
@@ -311,13 +289,13 @@ void loop() {
 
                   line.write(16, 33, Igain);
                   uint32_t IgainReadBack = line.readReg(16, 33);
-                  if ( line.isLastReadingOperationSucceeded() && IgainReadBack == Igain)
+                  if ( line.areLastReadingOperationsSucceeded() && IgainReadBack == Igain)
                   {
                     line.singConv(); // In order to compute the critical register checksum
                     delay(1000);
 
                     uint32_t regChk = line.getRegChk();
-                    if(line.isLastReadingOperationSucceeded())
+                    if(line.areLastReadingOperationsSucceeded())
                     {
                         Serial.print("I gain: "); 
                         Serial.println(Igain, HEX);
@@ -412,30 +390,20 @@ void loop() {
   
   static uint8_t communicationMaxRetries = 5;
   static uint8_t measureErrorDetectionCounter = 10;
-  registerReadingOperationIsOK = true;
   
   // Acquire data and control that read operations are all OK
   double rmsV = line.getRmsV();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double freq = line.getFreq();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double rmsI = line.getRmsI();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double PF = line.getPF();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double P = line.getAvgP();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double Q = line.getAvgQ();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   double S = line.getAvgS();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
 	uint32_t regChk = line.getRegChk();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
   bool internalVoltageReferenceOK = line.checkInternalVoltageReference();
-  if (!line.isLastReadingOperationSucceeded()) registerReadingOperationIsOK = false;
 
   // If all data are valid and the meter configuration is not corrupted, print results
-  if(registerReadingOperationIsOK)
+  if(line.areLastReadingOperationsSucceeded())
   {
     if(regChk == CriticalRegisterChecksum)
     {
@@ -519,7 +487,7 @@ void loop() {
       measureErrorDetectionCounter = 10;
       communicationMaxRetries = 5;
 
-      line.hardwareReset();   
+      line.resolve();   
       CS5490_SendConfiguration();
       
       Serial.println("RESET PERFORMED");

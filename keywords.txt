@@ -8,7 +8,7 @@ clearSerialBuffer	KEYWORD2
 toDouble	KEYWORD2
 toBinary	KEYWORD2
 concatData	KEYWORD2
-isLastReadingOperationSucceeded	KEYWORD2
+areLastReadingOperationsSucceeded	KEYWORD2
 getRegChk	KEYWORD2
 reset	KEYWORD2
 standby	KEYWORD2
@@ -58,6 +58,7 @@ getBaudRate	KEYWORD2
 setBaudRate	KEYWORD2
 setDOpinFunction	KEYWORD2
 readReg	KEYWORD2
+resolve	KEYWORD2
 
 MCLK_default	LITERAL1
 baudRate_default	LITERAL1

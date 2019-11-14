@@ -13,10 +13,7 @@
 	Modified by Maurizio Malaspina maurizio.malaspina@gmail.com 
 */
 
-
 #include "CS5490.h"
-
-
 
 /******* Init CS5490 *******/
 
@@ -56,7 +53,7 @@
 
 void CS5490::begin(int baudRate){
 	cSerial->begin(baudRate);
-	this->_readOperationResult = false;
+	this->_readOperationResult = true;
 	delay(10); //Avoid Bugs on Arduino UNO
 }
 
@@ -115,7 +112,6 @@ void CS5490::read(int page, int address){
 		for(int i=0; i<3; i++){
 			data[i] = cSerial->read();
 		}
-		this->_readOperationResult = true;
 	}
 	else
 	{
@@ -125,7 +121,14 @@ void CS5490::read(int page, int address){
 	this->clearSerialBuffer();
 }
 
-bool CS5490::isLastReadingOperationSucceeded(void)
+// Used to check if read operations succeeded or not. Return:
+// true, when all the reading operations occurred from the initial observing instant succeeded 
+// false, when there was an issue with the communication occurred therefore the read registers values could be corrupted.
+//
+// Note that the "initial observing instant" is the most recent occurred between the following events:
+//  - the last call to "begin()" method (in general before using the object)
+//  - the last call to "resolve()" method 
+bool CS5490::areLastReadingOperationsSucceeded(void)
 {
 	return this->_readOperationResult;
 }
@@ -292,6 +295,14 @@ bool CS5490::checkInternalVoltageReference(void)
 {
 	return (this->readReg(0, 30) == 0x0C0008 ? true : false);
 } 
+
+// Perform a chip recovery operation. Note that default internal registers values will be restored.
+// Used, in general, when the method "areLastReadingOperationsSucceeded()" return false.
+void CS5490::resolve(void)
+{
+  this->hardwareReset();
+  this->_readOperationResult = true;
+}
 
 void CS5490::reset(){
 	this->instruct(1);

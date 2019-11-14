@@ -113,7 +113,7 @@ public:
 	double toDouble(int LBSpow, int MSBoption);
 	uint32_t toBinary(int LSBpow, int MSBoption, double input);
 	uint32_t concatData();
-	bool isLastReadingOperationSucceeded(void);
+	bool areLastReadingOperationsSucceeded(void);
 	uint32_t getRegChk(void);
 
 
@@ -128,6 +128,7 @@ public:
 	void sendCalibrationCommand(uint8_t type, uint8_t channel);
 	void hardwareReset(void);
 	bool checkInternalVoltageReference(void);
+	void resolve(void);
 	/*** Calibration ***/
 
 	//Gain
