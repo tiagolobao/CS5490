@@ -28,10 +28,8 @@ CS5490 line(MCLK_default,rx,tx,Reset);
 #define I_MAX_RMS_A   (I_FS_RMS_V/R_SHUNT_OHM)
 #define P_FS          0.36
 #define P_COEFF       ((V_MAX_RMS * I_MAX_RMS_A) / (P_FS * SYS_GAIN * SYS_GAIN))
-#define P_COEFF_CALIBRATED       ((V_MAX_RMS * I_MAX_RMS_A) / (P_FS * SYS_GAIN)) // Once current gain calibrated the contribute of SYS_GAIN disappears during normal operation
 #define SAMPLE_COUNT_DEFAULT  4000 // Number of sample used to compute the output low rate computation (with quartz 4.096MHz --> 1 measure/s).
 
-bool calibrated;
 bool resetRequired;
 uint32_t CriticalRegisterChecksum;
 
@@ -89,7 +87,6 @@ void CS5490_SendConfiguration(void)
     if (line.areLastReadingOperationsSucceeded() && IgainCalibratedReadBack == IgainCalibrated)
     {
       Serial.println("Igain written and verified");
-      calibrated = true; 
     }
     else
     {
@@ -122,8 +119,6 @@ void setup() {
   line.hardwareReset();
   resetRequired = false;
   
-  calibrated = false; // In order to keep into considaration SYS_GAIN or not
-      
   //Initializing communication arduino/PC to show results in Monitor Serial
   Serial.begin(115200);
   // wait for serial port to connect. Needed for Leonardo only
@@ -144,7 +139,7 @@ void loop() {
   // Calibration should be performed with PF=1 --> pure resistive load
   
   #define I_CAL_RMS_A  1.3126 // Moreless 1/2 max load
-  #define SCALE_REGISTER_FRACTION  (0.6 * (I_CAL_RMS_A / I_MAX_RMS_A)) // For not full load calibration
+  #define SCALE_REGISTER_FRACTION  (0.6 * SYS_GAIN * (I_CAL_RMS_A / I_MAX_RMS_A)) // For not full load calibration
   #define SCALE_REGISTER_VALUE ((uint32_t)(SCALE_REGISTER_FRACTION * 0x800000)) 
 
   // Verify that reset is ok: HW RESET --> START SINGLE CONVERSION --> CHECK RESET CHECKSUM
@@ -216,7 +211,7 @@ void loop() {
 
         reg = line.readReg(0, 23); // Status0 register (in order to manage the DRDY bit)
         if (!line.areLastReadingOperationsSucceeded()) tuningSubSequenceIsOK = false;
-        line.write(0, 23, reg | 0x00800000); // Clear DRDY by setting it
+        line.write(0, 23, 0x00800000); // Clear DRDY by setting it
         uint32_t status0_reg_verify = line.readReg(0, 23);
         if (!line.areLastReadingOperationsSucceeded() || reg & 0x7FFFFF != status0_reg_verify) tuningSubSequenceIsOK = false;
 
@@ -415,32 +410,20 @@ void loop() {
       Serial.println(" Hz");
       Serial.print("Iac RMS: ");
       
-      if(calibrated)
-              rmsI  = (((rmsI)/I_FS)*I_FS_RMS_V)/R_SHUNT_OHM; // Once current gain calibrated the contribute of SYS_GAIN disappears during normal operation
-      else
-              rmsI  = (((rmsI/SYS_GAIN)/I_FS)*I_FS_RMS_V)/R_SHUNT_OHM;
+      rmsI  = (((rmsI/SYS_GAIN)/I_FS)*I_FS_RMS_V)/R_SHUNT_OHM;
       
       Serial.print( rmsI, 4 );
       Serial.println(" [A]");
       Serial.print("PF: ");
       Serial.println( PF, 4 );
       Serial.print("Active power: ");
-      if(calibrated)
-        Serial.print( P * P_COEFF_CALIBRATED , 4 ); 
-      else
-        Serial.print( P * P_COEFF , 4 ); 
+      Serial.print( P * P_COEFF , 4 ); 
       Serial.println(" W");
       Serial.print("Reactive power: ");
-      if(calibrated)
-        Serial.print( Q * P_COEFF_CALIBRATED, 4 );
-      else
-        Serial.print( Q * P_COEFF, 4 );
+      Serial.print( Q * P_COEFF, 4 );
       Serial.println(" VAR");
       Serial.print("Apparent power: ");
-      if(calibrated)
-        Serial.print( S * P_COEFF_CALIBRATED, 4 );
-      else
-         Serial.print( S * P_COEFF, 4 );
+      Serial.print( S * P_COEFF, 4 );
       Serial.println(" VA");
       Serial.print("Critical registers checksum: "); // Must be compared with the one expected for the current configuration (stored in the eeprom). In case of mismatch --> reset CS5490
       Serial.println(regChk, HEX);
