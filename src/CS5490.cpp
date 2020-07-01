@@ -1,6 +1,6 @@
 /**
 
-	@author Tiago Britto Lobão
+	@author Tiago Britto Lobao
 	tiago.blobao@gmail.com
 
 	Purpose: Control an integrated circuit
@@ -91,7 +91,7 @@ void CS5490::write(int page, int address, uint32_t value){
 void CS5490::read(int page, int address){
 
 	unsigned long startMillis;
-	
+
 	this->clearSerialBuffer();
 
 	uint8_t buffer;
@@ -122,12 +122,12 @@ void CS5490::read(int page, int address){
 }
 
 // Used to check if read operations succeeded or not. Return:
-// true, when all the reading operations occurred from the initial observing instant succeeded 
+// true, when all the reading operations occurred from the initial observing instant succeeded
 // false, when there was an issue with the communication occurred therefore the read registers values could be corrupted.
 //
 // Note that the "initial observing instant" is the most recent occurred between the following events:
 //  - the last call to "begin()" method (in general before using the object)
-//  - the last call to "resolve()" method 
+//  - the last call to "resolve()" method
 bool CS5490::areLastReadingOperationsSucceeded(void)
 {
 	return this->_readOperationResult;
@@ -266,13 +266,13 @@ uint32_t CS5490::concatData(){
 void CS5490::hardwareReset(void)
 {
 	unsigned long startTime;
-	
+
 	if(this->resetPin != -1) // Check if the reset pin is properly managed (see constructor overload)
 	{
 		// Manage LOW --> HIGH reset pin state
 		startTime = millis();
 		digitalWrite(this->resetPin, LOW);
-		pinMode(this->resetPin, OUTPUT);   
+		pinMode(this->resetPin, OUTPUT);
 		while(millis() < startTime + 100);
 		digitalWrite(this->resetPin, HIGH);
 		startTime = millis();
@@ -294,7 +294,7 @@ void CS5490::hardwareReset(void)
 bool CS5490::checkInternalVoltageReference(void)
 {
 	return (this->readReg(0, 30) == 0x0C0008 ? true : false);
-} 
+}
 
 // Perform a chip recovery operation. Note that default internal registers values will be restored.
 // Used, in general, when the method "areLastReadingOperationsSucceeded()" return false.
@@ -371,7 +371,7 @@ void CS5490::setDOpinFunction(DO_Function_t DO_fnct, bool openDrain)
 	uint32_t reg;
 
 	reg = this->readReg(0,1); // Config 1 register
-	reg &= (~0x0000000F); 
+	reg &= (~0x0000000F);
 
 	if(openDrain)
 		reg |= 0x00010000;
@@ -384,7 +384,7 @@ void CS5490::setDOpinFunction(DO_Function_t DO_fnct, bool openDrain)
 	if(DO_fnct == DO_EPG || DO_fnct == DO_P_SIGN || DO_fnct == DO_P_SUM_SIGN || DO_fnct == DO_Q_SIGN || DO_fnct == DO_Q_SUM_SIGN || DO_fnct == DO_V_ZERO_CROSSING || DO_fnct == DO_I_ZERO_CROSSING || DO_fnct == DO_HI_Z_DEFAULT)
 	{
 		reg |= (uint32_t)DO_fnct;
-		this->write(0,1,reg);	
+		this->write(0,1,reg);
 	}
 }
 
@@ -446,17 +446,17 @@ void CS5490::setGainT(double value){
 void CS5490::setAfeGainI(AfeGainI_t AfeCurrentGain)
 {
 	uint32_t reg;
-	
+
 	if(AfeCurrentGain > I_GAIN_50x)
 		return;
 
 	reg = this->readReg(0,0); // Config 0 register
-	reg &= (~0x00000030); 
+	reg &= (~0x00000030);
 
 	if(AfeCurrentGain == I_GAIN_50x)
 		reg |= 0x00000020;
 
-	this->write(0,0,reg);	
+	this->write(0,0,reg);
 }
 
 /* OFFSET */
