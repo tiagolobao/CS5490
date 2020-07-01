@@ -478,7 +478,7 @@ double CS5490::getAcOffsetI(){
 
 double CS5490::getOffsetT(){
   this->read(16,55);
-	return this->toDouble(23, MSBsigned);
+	return this->toDouble(16, MSBsigned);
 }
 
 void CS5490::setDcOffsetV(double value){
@@ -497,7 +497,7 @@ void CS5490::setAcOffsetI(double value){
 }
 
 void CS5490::setOffsetT(double value){
-	uint32_t binValue = this->toBinary(23,MSBsigned,value);
+	uint32_t binValue = this->toBinary(16,MSBsigned,value);
   this->write(16,55,binValue);
 }
 
