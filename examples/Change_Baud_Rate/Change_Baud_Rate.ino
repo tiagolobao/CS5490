@@ -7,11 +7,13 @@
 /* Choose your board */
 
 /* Arduino UNO and ESP8622 */
+#ifndef __AVR_ATmega2560__
 CS5490 line(MCLK_default,rx,tx);
 
 /* ESP and MEGA  (Uses Serial2)*/
-//CS5490 line(MCLK_default);
-
+#else
+CS5490 line(MCLK_default);
+#endif
 
 void setup() {
   //Initializing communication with CS5490
