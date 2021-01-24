@@ -23,12 +23,6 @@ if [ $? != 0 ]; then
     echo "unable to find cli -- try bash build_examples.sh arduino-cli"
     exit 1
 fi
-# make sure the cores/boards are installed
-$1 core install arduino:avr
-if [ $? != 0 ]; then
-    echo "Boards not installed correctly"
-    exit 1
-fi
 
 # --------- Function Declarations -----------------
 
@@ -40,7 +34,6 @@ fi
 function check_cs5490_build {
     if [ $1 != 0 ]; then
         echo "!!FAILED!! By $2"
-        sed -i '3s/.*/[![build](https:\/\/img.shields.io\/badge\/tests-0%20passed%2C%201%20failed-red)](https:\/\/github.com\/tiagolobao\/CS5490\/releases)/' README.md
         exit 1
     fi    
 }
@@ -76,9 +69,7 @@ for sketch in ${mega_folders[@]}; do
     check_cs5490_build $? $sketch
 done
 
-echo "BUILD SUCCESSFUL. updating readme"
-
-sed -i '3s/.*/[![build](https:\/\/img.shields.io\/badge\/build-passing-brightgreen)](https:\/\/github.com\/tiagolobao\/CS5490\/releases)/' README.md
+echo "BUILD SUCCESSFUL"
 
 exit 0
 
